@@ -12,18 +12,9 @@ namespace EbookObjects.Models.Mapping
 
             // Properties
             this.Property(t => t.Name)
-                .IsRequired()
                 .HasMaxLength(100);
 
-            this.Property(t => t.Email)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            this.Property(t => t.Password)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            this.Property(t => t.Salt)
+            this.Property(t => t.Identity)
                 .IsRequired()
                 .HasMaxLength(50);
 
@@ -31,9 +22,7 @@ namespace EbookObjects.Models.Mapping
             this.ToTable("User");
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.Name).HasColumnName("Name");
-            this.Property(t => t.Email).HasColumnName("Email");
-            this.Property(t => t.Password).HasColumnName("Password");
-            this.Property(t => t.Salt).HasColumnName("Salt");
+            this.Property(t => t.Identity).HasColumnName("Identity");
         }
     }
 }

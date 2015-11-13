@@ -39,6 +39,11 @@ namespace EbookObjects.Models
             modelBuilder.Configurations.Add(new SeriesMap());
             modelBuilder.Configurations.Add(new TagMap());
             modelBuilder.Configurations.Add(new UserMap());
+
+            modelBuilder.Entity<User>()
+                .HasIndex("IX_UserIdentity",
+                    IndexOptions.Unique,
+                    e => e.Property(x => x.Identity));
         }
     }
 }
