@@ -145,29 +145,23 @@ namespace EbookObjects {
         /// </summary>
         public string Description => _metadata?.Element(_dc + "description")?.Value;
 
-        /// <summary>
-        /// Gets the name of the file within the epub zip that contains the cover.
-        /// </summary>
-        public string CoverFile {
-            get {
-                string file = null;
-                // Check in the metadata
-                string manEntry = (string)_metadata?.Elements(_ns + "meta")?.FirstOrDefault(e => (string)e.Attribute("name") == "cover")?.Attribute("content");
-                if (manEntry != null) file = (string)manifest?.Elements(_ns + "item").SingleOrDefault(e => (string)e.Attribute("id") == manEntry)?.Attribute("href");
+        private void getCoverInfo(out string file, out string contentType) {
+            file = null;
+            // Check in the metadata
+            string manEntry = (string)_metadata?.Elements(_ns + "meta")?.FirstOrDefault(e => (string)e.Attribute("name") == "cover")?.Attribute("content");
+            if (manEntry != null) file = manifest?.Elements(_ns + "item").SingleOrDefault(e => (string)e.Attribute("id") == manEntry)?.Attribute("href")?.Value;
+            if (file != null && getMediaType(file) != "image") file = findCoverInHtml(file);
+            if (file == null) {
+                // Check in the guide
+                file = _opf.Root.Element(_ns + "guide")?.Elements(_ns + "reference").SingleOrDefault(e => (string)e.Attribute("type") == "cover")?.Attribute("href")?.Value;
                 if (file != null && getMediaType(file) != "image") file = findCoverInHtml(file);
-                if (file == null) {
-                    // Check in the guide
-                    file = _opf.Root.Element(_ns + "guide")?.Elements(_ns + "reference").SingleOrDefault(e => (string)e.Attribute("type") == "cover")?.Attribute("href")?.Value;
-                    if (file != null && getMediaType(file) != "image") file = findCoverInHtml(file);
-                }
-                if (file == null) {
-                    // Check in the manifest
-                    file = manifest?.Elements(_ns + "item")?.FirstOrDefault(e => (string)e.Attribute("id") == "cover")?.Attribute("href")?.Value;
-                    if (file != null && getMediaType(file) != "image") file = findCoverInHtml(file);
-                }
-                if (file == null) return null;
-                return getFullPath(file);
             }
+            if (file == null) {
+                // Check in the manifest
+                file = manifest?.Elements(_ns + "item")?.FirstOrDefault(e => (string)e.Attribute("id") == "cover")?.Attribute("href")?.Value;
+                if (file != null && getMediaType(file) != "image") file = findCoverInHtml(file);
+            }
+            contentType = getFullMediaType(file);
         }
 
         /// <summary>
@@ -213,9 +207,13 @@ namespace EbookObjects {
         /// <param name="href"></param>
         /// <returns></returns>
         private string getMediaType(string href) {
-            string mtype = manifest?.Elements(_ns + "item").SingleOrDefault(m => (string)m.Attribute("href") == href)?.Attribute("media-type")?.Value;
+            string mtype = getFullMediaType(href);
             if (mtype == null) return null;
             return mtype.Split('/')[0];
+        }
+
+        private string getFullMediaType(string href) {
+            return href == null ? null : manifest?.Elements(_ns + "item").SingleOrDefault(m => (string)m.Attribute("href") == href)?.Attribute("media-type")?.Value;
         }
 
         /// <summary>
@@ -233,9 +231,10 @@ namespace EbookObjects {
             get {
                 if (_coverLoaded) return _cover;
                 _coverLoaded = true;
-                if (CoverFile == null) return null;
+                var coverData = GetCoverData();
+                if (coverData == null) return null;
                 // Can't dispose the stream here because it has to be kept open as long as the bitmap is in use
-                _coverStream = new MemoryStream(GetCoverData(), false);
+                _coverStream = new MemoryStream(coverData, false);
                 try {
                     return (_cover = new Bitmap(_coverStream));
                 } catch { return null; }
@@ -247,14 +246,24 @@ namespace EbookObjects {
         /// </summary>
         /// <returns></returns>
         public byte[] GetCoverData() {
-            if (CoverFile == null) return null;
-            var entry = _zip.Entries.SingleOrDefault(e => e.FullName == CoverFile);
+            string coverFile, contentType;
+            getCoverInfo(out coverFile, out contentType);
+            if (coverFile == null) return null;
+            var entry = _zip.Entries.SingleOrDefault(e => e.FullName == coverFile);
             if (entry == null) return null;
             using (var s = entry.Open())
             using (var m = new MemoryStream()) {
                 s.CopyTo(m);
                 m.Seek(0, SeekOrigin.Begin);
                 return m.ToArray();
+            }
+        }
+
+        public string CoverContentType {
+            get {
+                string f, t;
+                getCoverInfo(out f, out t);
+                return t;
             }
         }
 
