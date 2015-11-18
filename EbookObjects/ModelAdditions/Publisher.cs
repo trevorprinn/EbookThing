@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace EbookObjects.Models {
     partial class Publisher {
 
-        public static Publisher Get(EbooksContext context, Epub ep) {
+        public static Publisher Get(EbooksContext db, Epub ep) {
             if (string.IsNullOrWhiteSpace(ep.Publisher)) return null;
-            var pub = context.Publishers.SingleOrDefault(p => p.Name == ep.Publisher);
+            var pub = db.Publishers.SingleOrDefault(p => p.Name == ep.Publisher);
             if (pub == null) {
-                context.Publishers.Add(pub = new Publisher { Name = ep.Publisher });
+                db.Publishers.Add(pub = new Publisher { Name = ep.Publisher });
             }
             return pub;
         }

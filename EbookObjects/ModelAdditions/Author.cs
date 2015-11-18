@@ -7,13 +7,17 @@ using System.Threading.Tasks;
 namespace EbookObjects.Models {
     partial class Author {
 
-        public static Author Get(EbooksContext context, Epub ep) {
-            if (string.IsNullOrWhiteSpace(ep.Author)) return null;
-            var author = context.Authors.SingleOrDefault(a => a.Name == ep.Author);
+        public static Author Get(EbooksContext db, string name) {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            var author = db.Authors.SingleOrDefault(a => a.Name == name);
             if (author == null) {
-                context.Authors.Add(author = new Author { Name = ep.Author });
+                db.Authors.Add(author = new Author { Name = name });
             }
             return author;
+        }
+
+        public static Author Get(EbooksContext db, Epub ep) {
+            return Get(db, ep.Author);
         }
 
     }

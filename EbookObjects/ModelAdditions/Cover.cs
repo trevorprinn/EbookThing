@@ -22,11 +22,11 @@ namespace EbookObjects.Models {
             return new Bitmap(ms);
         }
 
-        public static Cover Get(EbooksContext context, Epub ep) {
+        public static Cover Get(EbooksContext db, Epub ep) {
             var bcover = ep.GetCoverData();
             if (bcover == null) return null;
             string checksum = bcover.GetChecksum();
-            var cover = context.Covers.SingleOrDefault(c => c.Checksum == checksum);
+            var cover = db.Covers.SingleOrDefault(c => c.Checksum == checksum);
             if (cover == null) {
                 using (var ts = new MemoryStream()) {
                     ImageCodecInfo encoder = ImageCodecInfo.GetImageEncoders().Single(e => e.FormatID == ImageFormat.Jpeg.Guid);
@@ -34,7 +34,7 @@ namespace EbookObjects.Models {
                     encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 75L);
 
                     ep.CoverThumbnail.Save(ts, encoder, encoderParams);
-                    context.Covers.Add(cover = new Cover {
+                    db.Covers.Add(cover = new Cover {
                         Picture = bcover,
                         Thumbnail = ts.ToArray(),
                         Checksum = checksum

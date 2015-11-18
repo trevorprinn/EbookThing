@@ -11,12 +11,12 @@ namespace EbookObjects.Models {
         /// Sets the tags on the book to match the list passed in
         /// </summary>
         /// <param name="newTags"></param>
-        public void SetTags(EbooksContext context, IEnumerable<string> newTags) {
+        public void SetTags(EbooksContext db, IEnumerable<string> newTags) {
             // Add the tags that aren't already against the book
             foreach (var tag in newTags.Except(Tags.Select(t => t.Item)).ToArray()) {
-                var rtag = context.Tags.SingleOrDefault(t => t.Item == tag);
+                var rtag = db.Tags.SingleOrDefault(t => t.Item == tag);
                 if (rtag == null) {
-                    context.Tags.Add(rtag = new Tag { Item = tag });
+                    db.Tags.Add(rtag = new Tag { Item = tag });
                 }
                 Tags.Add(rtag);
             }
@@ -30,18 +30,18 @@ namespace EbookObjects.Models {
         /// <summary>
         /// Sets the identifiers on the book to match the list passed in
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="db"></param>
         /// <param name="newIds">Item1 = the ident name, Item2 = the value for this book</param>
-        public void SetIdentifiers(EbooksContext context, IEnumerable<Tuple<string, string>> newIds) {
+        public void SetIdentifiers(EbooksContext db, IEnumerable<Tuple<string, string>> newIds) {
             // Clear the idents against the book and re-add them.
             BookIdents.Clear();
 
             foreach (var id in newIds) {
-                var ident = context.Idents.SingleOrDefault(i => i.Name == id.Item1);
+                var ident = db.Idents.SingleOrDefault(i => i.Name == id.Item1);
                 if (ident == null) {
-                    context.Idents.Add(ident = new Ident { Name = id.Item1 });
+                    db.Idents.Add(ident = new Ident { Name = id.Item1 });
                 }
-                context.BookIdents.Add(new BookIdent { Book = this, Ident = ident, Identifier = id.Item2 });
+                db.BookIdents.Add(new BookIdent { Book = this, Ident = ident, Identifier = id.Item2 });
             }
         }
 
@@ -57,27 +57,27 @@ namespace EbookObjects.Models {
         /// <summary>
         /// Loads a new book into the database for the given user, reusing records wherever possible.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="db"></param>
         /// <param name="ep"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <remarks>Does not save the changes.</remarks>
-        public static Book Load(EbooksContext context, Epub ep, int userId) {
+        public static Book Load(EbooksContext db, Epub ep, int userId) {
             var book = new Book {
                 UserId = userId,
                 Title = ep.Title,
-                Author = Author.Get(context, ep),
-                Publisher = Publisher.Get(context, ep),
-                Cover = Cover.Get(context, ep),
-                EpubFile = EpubFile.Get(context, ep),
-                Series = Series.Get(context, ep),
+                Author = Author.Get(db, ep),
+                Publisher = Publisher.Get(db, ep),
+                Cover = Cover.Get(db, ep),
+                EpubFile = EpubFile.Get(db, ep),
+                Series = Series.Get(db, ep),
                 SeriesNbr = ep.SeriesNbr,
                 Description = ep.Description
             };
-            book.SetTags(context, ep.Tags);
-            book.SetIdentifiers(context, ep.Identifiers);
+            book.SetTags(db, ep.Tags);
+            book.SetIdentifiers(db, ep.Identifiers);
 
-            context.Books.Add(book);
+            db.Books.Add(book);
 
             return book;
         }
@@ -85,21 +85,21 @@ namespace EbookObjects.Models {
         /// <summary>
         /// Reloads the database record with the book data, overwriting any changes made by the user.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="db"></param>
         /// <remarks>Does not save the changes.</remarks>
-        public void Reload(EbooksContext context) {
+        public void Reload(EbooksContext db) {
             var ep = new Epub(this);
 
             Title = ep.Title;
-            Author = Author.Get(context, ep);
-            Publisher = Publisher.Get(context, ep);
-            Cover = Cover.Get(context, ep);
-            EpubFile = EpubFile.Get(context, ep);
-            Series = Series.Get(context, ep);
+            Author = Author.Get(db, ep);
+            Publisher = Publisher.Get(db, ep);
+            Cover = Cover.Get(db, ep);
+            EpubFile = EpubFile.Get(db, ep);
+            Series = Series.Get(db, ep);
             SeriesNbr = ep.SeriesNbr;
             Description = ep.Description;
-            SetTags(context, ep.Tags);
-            SetIdentifiers(context, ep.Identifiers);
+            SetTags(db, ep.Tags);
+            SetIdentifiers(db, ep.Identifiers);
         }
     }
 }

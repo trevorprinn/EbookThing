@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 namespace EbookObjects.Models {
     partial class EpubFile {
 
-        public static EpubFile Get(EbooksContext context, Epub ep) {
+        public static EpubFile Get(EbooksContext db, Epub ep) {
             using (var s = ep.GetDataStream()) {
                 string checksum = s.GetChecksum();
-                var epub = context.EpubFiles.SingleOrDefault(ef => ef.Checksum == checksum);
+                var epub = db.EpubFiles.SingleOrDefault(ef => ef.Checksum == checksum);
                 if (epub == null) {
                     using (var m = new MemoryStream()) {
                         s.Seek(0, SeekOrigin.Begin);
                         s.CopyTo(m);
 
-                        context.EpubFiles.Add(epub = new EpubFile {
+                        db.EpubFiles.Add(epub = new EpubFile {
                             Contents = m.ToArray(),
                             Checksum = checksum
                         });
