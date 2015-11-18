@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Upload Epubs";
+}
+
+<h2>ViewBag.Title</h2>
+
+@using (Html.BeginForm("UploadFiles", "Ebooks", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    <fieldset>
+        <legend>Upload Epub files</legend>
+        <div class="editor-field">
+            @Html.TextBox("file", "", new { type = "file", multiple = "multiple" })
+        </div>
+        <div class="editor-field">
+            <input type="submit" value="Upload" />
+        </div>
+    </fieldset>
+}
+
+<!-- <form action="/Ebooks/UploadFiles" method="post" enctype="multipart/form-data">
+    <label for="files">Files:</label>
+    <input type="file" name="file" id="file" />
+
+    <input type="submit" name="submit" value="Submit" />
+</form> -->
+

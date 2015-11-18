@@ -1,0 +1,35 @@
+﻿@model EbookSite.Models.DisplayBooksViewModel
+
+@{
+    ViewBag.Title = "Your Books";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Upload", "Upload")
+</p>
+<form action="/Ebooks/Index" method="get">
+    @Html.DisplayNameFor(model => model.Filter)
+    @Html.TextBoxFor(model => model.Filter)
+    <input type="submit" name="submit" value="Apply Filter" />
+</form>
+<table class="table">
+    <tr>
+        <th>Author</th>
+        <th>Title</th>
+    </tr>
+
+@foreach (var item in Model.Books) {
+    <tr>
+        <td>@Html.DisplayFor(m => item.Author)</td>
+        <td>@Html.DisplayFor(m => item.Title)</td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
+            @Html.ActionLink("Details", "Details", new { bookId = item.BookId }) |
+            @Html.ActionLink("Delete", "Delete", new { bookId =item.BookId })
+        </td>
+    </tr>
+}
+
+</table>
