@@ -48,10 +48,8 @@ namespace EbookObjects.Models {
         /// <summary>
         /// Gets the Table of Contents of the book.
         /// </summary>
-        public Toc Toc {
-            get {
-                using (var b = new Epub(this)) return b.Toc;
-            }
+        public Toc GetToc() {
+            using (var b = new Epub(this)) return b.Toc;
         }
 
         /// <summary>
