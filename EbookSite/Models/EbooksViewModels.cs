@@ -57,6 +57,12 @@ namespace EbookSite.Models {
         public string Author { get; set; }
     }
 
+    public class CoverViewModel {
+        public int BookId { get; set; }
+
+        public string Title { get; set; }
+    }
+
 
 
 }

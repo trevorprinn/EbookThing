@@ -68,5 +68,12 @@ namespace EbookSite.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult Cover(int bookId) {
+            using (var db = new EbooksContext()) {
+                var book = db.Books.Single(b => b.BookId == bookId);
+                var model = new CoverViewModel { BookId = book.BookId, Title = book.Title };
+                return View(model);
+            }
+        }
     }
 }

@@ -1,0 +1,14 @@
+﻿@model EbookSite.Models.CoverViewModel
+
+@{
+    ViewBag.Title = "Cover";
+}
+
+<h2>@Model.Title</h2>
+
+<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
+
+<img src='@Url.Action("ShowCover", "BookImage", new { bookId = Model.BookId })'/>
+
+<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
+

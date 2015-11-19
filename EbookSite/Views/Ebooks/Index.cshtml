@@ -24,7 +24,7 @@
     <tr>
         <td>@Html.DisplayFor(m => item.Author)</td>
         <td>@Html.DisplayFor(m => item.Title)</td>
-        <td><img src='@Url.Action("ShowThumbnail", "BookImage", new { bookId = item.BookId })'/></td>
+        <td><a href='@Url.Action("Cover", new { bookId = item.BookId })'><img src='@Url.Action("ShowThumbnail", "BookImage", new { bookId = item.BookId })' /></a></td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
             @Html.ActionLink("Details", "Details", new { bookId = item.BookId }) |

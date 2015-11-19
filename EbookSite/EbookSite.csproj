@@ -242,6 +242,7 @@
     <Content Include="Views\Ebooks\Upload.cshtml" />
     <Content Include="Views\Ebooks\Details.cshtml" />
     <Content Include="Views\Ebooks\Edit.cshtml" />
+    <Content Include="Views\Ebooks\Cover.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
