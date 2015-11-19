@@ -32,22 +32,25 @@ namespace EbookSite.Models {
     }
 
     public class BookViewModel {
-        public string Title { get; set; }
+        public string Title { get; }
 
-        public int? AuthorId { get; set; }
+        public string Author { get; }
 
-        public string Author { get; set; }
-
-        public SelectList Authors { get; set; }
+        public SelectList Authors { get; }
 
         public int BookId { get; }
+
+        public string Publisher { get; }
+
+        public SelectList Publishers { get; }
 
         public BookViewModel(Book book, EbooksContext db) {
             BookId = book.BookId;
             Title = book.Title;
-            AuthorId = book.AuthorId;
             Author = book.Author?.Name;
             Authors = new SelectList(db.Authors.Where(a => a.Books.Any(b => b.UserId == book.UserId)).ToArray(), "AuthorId", "Name", Author);
+            Publisher = book.Publisher?.Name;
+            Publishers = new SelectList(db.Publishers.Where(p => p.Books.Any(b => b.UserId == book.UserId)).ToArray(), "PublisherId", "Name", Publisher);
         }
     }
 
@@ -55,6 +58,7 @@ namespace EbookSite.Models {
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
+        public string Publisher { get; set; }
     }
 
     public class CoverViewModel {

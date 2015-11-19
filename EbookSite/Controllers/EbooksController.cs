@@ -63,6 +63,7 @@ namespace EbookSite.Controllers
                 var book = db.Books.Single(b => b.BookId == model.BookId);
                 book.Title = model.Title;
                 book.Author = Author.Get(db, model.Author);
+                book.Publisher = Publisher.Get(db, model.Publisher);
                 db.SaveChanges();
             }
 
