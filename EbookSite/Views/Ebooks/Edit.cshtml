@@ -11,9 +11,11 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.BookId)
-    
+
+    @Scripts.Render("~/bundles/jHtmlArea")
+    @Styles.Render("~/bundles/jHtmlAreaCss")
+
     <div class="form-horizontal">
-        <h4>BookViewModel</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -37,6 +39,15 @@
             <div class="col-md-10">
                 @Html.ComboBoxFor(model => model.Publisher, Model.Publishers)
                 @Html.ValidationMessageFor(model => model.Publisher, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12">
+                @Html.TextAreaFor(model => model.Description, 10, 300, new { style = "max-width: 700px" })
+                @Html.ValidationMessageFor(model => model.Description, "", new {  @class = "text-danger"})
+                <script>$('#Description').htmlarea()</script>
             </div>
         </div>
 

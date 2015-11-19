@@ -48,7 +48,8 @@ namespace EbookSite.Controllers
             return Redirect("~/Ebooks");
         }
 
-        public ActionResult Edit(int bookId) {
+        public ActionResult Edit(int? bookId) {
+            if (bookId == null) return RedirectToAction("Index");
             using (var db = new EbooksContext()) {
                 var user = db.GetEbooksUser(User);
                 var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
@@ -64,6 +65,7 @@ namespace EbookSite.Controllers
                 book.Title = model.Title;
                 book.Author = Author.Get(db, model.Author);
                 book.Publisher = Publisher.Get(db, model.Publisher);
+                book.Description = model.Description;
                 db.SaveChanges();
             }
 
