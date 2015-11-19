@@ -70,7 +70,5 @@ namespace EbookObjects.Models {
         }
 
         public static byte[] EmptyCover => EmptyThumbnail;
-
-        public string ImageContentType => "image/jpeg";
     }
 }

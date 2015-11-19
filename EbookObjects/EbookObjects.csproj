@@ -65,6 +65,15 @@
   <ItemGroup>
     <Compile Include="Epub.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Migrations\201511131950582_InitialCreate.cs" />
+    <Compile Include="Migrations\201511131950582_InitialCreate.Designer.cs">
+      <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511191137334_CoverContentType.cs" />
+    <Compile Include="Migrations\201511191137334_CoverContentType.Designer.cs">
+      <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ModelAdditions\Author.cs" />
     <Compile Include="ModelAdditions\Book.cs" />
     <Compile Include="ModelAdditions\Cover.cs" />
@@ -99,6 +108,14 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201511131950582_InitialCreate.resx">
+      <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511191137334_CoverContentType.resx">
+      <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

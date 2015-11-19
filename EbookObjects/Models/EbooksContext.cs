@@ -10,7 +10,7 @@ namespace EbookObjects.Models
 {
     public partial class EbooksContext : DbContext {
         static EbooksContext() {
-            Database.SetInitializer<EbooksContext>(new CreateDatabaseIfNotExists<EbooksContext>());
+            Database.SetInitializer<EbooksContext>(new MigrateDatabaseToLatestVersion<EbooksContext, Migrations.Configuration>());
         }
 
         public EbooksContext()

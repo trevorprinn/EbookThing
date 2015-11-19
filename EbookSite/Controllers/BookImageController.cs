@@ -23,7 +23,7 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 var cover = db.Books.Single(b => b.BookId == bookId).Cover;
                 var pic = cover?.Picture ?? Cover.EmptyCover;
-                var type = cover?.ImageContentType ?? "image/jpeg";
+                var type = cover?.ContentType ?? "image/jpeg";
                 return new FileStreamResult(new MemoryStream(pic), type);
             }
         }

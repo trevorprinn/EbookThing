@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EbookObjects.Models
 {
@@ -15,5 +16,8 @@ namespace EbookObjects.Models
         public byte[] Thumbnail { get; set; }
         public string Checksum { get; set; }
         public virtual ICollection<Book> Books { get; set; }
+
+        [StringLength(50)]
+        public string ContentType { get; set; }
     }
 }
