@@ -46,8 +46,8 @@ namespace EbookSite.Models {
             BookId = book.BookId;
             Title = book.Title;
             AuthorId = book.AuthorId;
-            Author = book.Author.Name;
-            Authors = new SelectList(db.Authors.ToArray(), "AuthorId", "Name", Author);
+            Author = book.Author?.Name;
+            Authors = new SelectList(db.Authors.Where(a => a.Books.Any(b => b.UserId == book.UserId)).ToArray(), "AuthorId", "Name", Author);
         }
     }
 

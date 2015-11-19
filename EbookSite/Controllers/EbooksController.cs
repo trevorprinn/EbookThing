@@ -50,8 +50,9 @@ namespace EbookSite.Controllers
 
         public ActionResult Edit(int bookId) {
             using (var db = new EbooksContext()) {
-                var book = db.Books.SingleOrDefault(b => b.BookId == bookId);
-                if (book == null) RedirectToAction("Index");
+                var user = db.GetEbooksUser(User);
+                var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
+                if (book == null) return Redirect(Request.UrlReferrer.ToString());
                 return View(new BookViewModel(book, db));
             }
         }
@@ -70,7 +71,9 @@ namespace EbookSite.Controllers
 
         public ActionResult Cover(int bookId) {
             using (var db = new EbooksContext()) {
-                var book = db.Books.Single(b => b.BookId == bookId);
+                var user = db.GetEbooksUser(User);
+                var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
+                if (book == null) return RedirectToAction("Index");
                 var model = new CoverViewModel { BookId = book.BookId, Title = book.Title };
                 return View(model);
             }
