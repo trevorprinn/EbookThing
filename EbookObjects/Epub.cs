@@ -320,6 +320,20 @@ namespace EbookObjects {
         }
 
         /// <summary>
+        /// Gets the contents of one of the files from the zip.
+        /// </summary>
+        /// <param name="path">Relative to the root folder</param>
+        /// <returns></returns>
+        public Stream GetContentFile(string path) {
+            var arc = _zip.Entries.SingleOrDefault(a => a.FullName == getFullPath(path));
+            if (arc == null) return new MemoryStream(0);
+            var m = new MemoryStream();
+            arc.Open().CopyTo(m);
+            m.Seek(0, SeekOrigin.Begin);
+            return m;
+        }
+
+        /// <summary>
         /// Gets a list of the files that make up the contents of the book. This can be used with ExportManifest to
         /// display the book.
         /// </summary>

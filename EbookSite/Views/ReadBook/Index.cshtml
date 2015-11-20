@@ -1,0 +1,27 @@
+﻿@model EbookSite.Models.ReadBookViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@Model.Title</h2>
+
+<p>
+    @Html.ActionLink("Previous", "Index", new { bookId = Model.BookId, spineIndex = Model.SpineIndex - 1 })
+    @Html.ActionLink("Next", "Index", new { bookId = Model.BookId, spineIndex = Model.SpineIndex + 1 })
+
+</p>
+@Model.Url
+
+<iframe id="iFrame" style="width:100%" src="@Model.Url"></iframe>
+
+<script>
+    $().ready(function () {
+        $('#iFrame').height($(window).height() - 200);
+    });
+
+
+    $(window).resize(function () {
+        $('#iFrame').height($(window).height() - 200);
+    });
+</script>
