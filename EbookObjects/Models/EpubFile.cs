@@ -14,5 +14,9 @@ namespace EbookObjects.Models
         public byte[] Contents { get; set; }
         public string Checksum { get; set; }
         public virtual ICollection<Book> Books { get; set; }
+
+        public int? GutBookId { get; set; }
+        public virtual GutBook GutBook { get; set; }
+        public bool? GutBookWithImages { get; set; }
     }
 }

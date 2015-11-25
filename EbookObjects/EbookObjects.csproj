@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Epub.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GutCatalogueLoader.cs" />
     <Compile Include="Migrations\201511131950582_InitialCreate.cs" />
     <Compile Include="Migrations\201511131950582_InitialCreate.Designer.cs">
       <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
@@ -72,6 +73,10 @@
     <Compile Include="Migrations\201511191137334_CoverContentType.cs" />
     <Compile Include="Migrations\201511191137334_CoverContentType.Designer.cs">
       <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511251636301_Gutenberg.cs" />
+    <Compile Include="Migrations\201511251636301_Gutenberg.Designer.cs">
+      <DependentUpon>201511251636301_Gutenberg.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ModelAdditions\Author.cs" />
@@ -86,6 +91,8 @@
     <Compile Include="Models\Cover.cs" />
     <Compile Include="Models\EbooksContext.cs" />
     <Compile Include="Models\EpubFile.cs" />
+    <Compile Include="Models\GutAuthor.cs" />
+    <Compile Include="Models\GutBook.cs" />
     <Compile Include="Models\Ident.cs" />
     <Compile Include="Models\Mapping\AuthorMap.cs" />
     <Compile Include="Models\Mapping\BookIdentMap.cs" />
@@ -115,6 +122,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511191137334_CoverContentType.resx">
       <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511251636301_Gutenberg.resx">
+      <DependentUpon>201511251636301_Gutenberg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

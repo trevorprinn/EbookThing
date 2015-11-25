@@ -28,6 +28,9 @@ namespace EbookObjects.Models
         public DbSet<Tag> Tags { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public virtual DbSet<GutBook> GutBooks { get; set; }
+        public virtual DbSet<GutAuthor> GutAuthors { get; set; }
+
         //
         // These are required for the integrated user membership.
         //
@@ -36,6 +39,7 @@ namespace EbookObjects.Models
         public virtual DbSet<IdentityUserClaim> AspNetUserClaims { get; set; }
         public virtual DbSet<IdentityUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<IdentityUserRole> AspNetUserRoles { get; set; }
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder) {
