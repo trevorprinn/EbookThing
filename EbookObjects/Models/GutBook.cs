@@ -11,6 +11,7 @@ using System.Drawing;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EbookObjects.Models {
+    [Table("GutBook")]
     public class GutBook {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -73,12 +74,6 @@ namespace EbookObjects.Models {
         public byte[] GetCoverData() {
             if (string.IsNullOrWhiteSpace(CoverUrl)) return null;
             return getFile(CoverUrl);
-        }
-
-        public static GutBook Get(EbooksContext db, int gutBookId) {
-            var book = db.GutBooks.SingleOrDefault(b => b.GutBookId == gutBookId);
-            if (book == null) db.GutBooks.Add(new GutBook { GutBookId = gutBookId });
-            return book;
         }
     }
 }

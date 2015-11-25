@@ -8,7 +8,7 @@ namespace EbookObjects.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.GutBooks",
+                "dbo.GutBook",
                 c => new
                     {
                         GutBookId = c.Int(nullable: false),
@@ -20,17 +20,16 @@ namespace EbookObjects.Migrations
                         ThumbnailUrl = c.String(),
                         ThumbnailData = c.Binary(),
                         CoverUrl = c.String(),
-                        GutAuthor_GutAuthorId = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.GutBookId)
-                .ForeignKey("dbo.GutAuthors", t => t.GutAuthor_GutAuthorId)
-                .Index(t => t.GutAuthor_GutAuthorId);
+                .ForeignKey("dbo.GutAuthor", t => t.GutAuthorId)
+                .Index(t => t.GutAuthorId);
             
             CreateTable(
-                "dbo.GutAuthors",
+                "dbo.GutAuthor",
                 c => new
                     {
-                        GutAuthorId = c.String(nullable: false, maxLength: 128),
+                        GutAuthorId = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 250),
                     })
                 .PrimaryKey(t => t.GutAuthorId)
@@ -39,20 +38,20 @@ namespace EbookObjects.Migrations
             AddColumn("dbo.EpubFile", "GutBookId", c => c.Int());
             AddColumn("dbo.EpubFile", "GutBookWithImages", c => c.Boolean());
             CreateIndex("dbo.EpubFile", "GutBookId");
-            AddForeignKey("dbo.EpubFile", "GutBookId", "dbo.GutBooks", "GutBookId");
+            AddForeignKey("dbo.EpubFile", "GutBookId", "dbo.GutBook", "GutBookId");
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.GutBooks", "GutAuthor_GutAuthorId", "dbo.GutAuthors");
-            DropForeignKey("dbo.EpubFile", "GutBookId", "dbo.GutBooks");
-            DropIndex("dbo.GutAuthors", "IX_GutAuthor_Name");
-            DropIndex("dbo.GutBooks", new[] { "GutAuthor_GutAuthorId" });
+            DropForeignKey("dbo.GutBook", "GutAuthorId", "dbo.GutAuthor");
+            DropForeignKey("dbo.EpubFile", "GutBookId", "dbo.GutBook");
+            DropIndex("dbo.GutAuthor", "IX_GutAuthor_Name");
+            DropIndex("dbo.GutBook", new[] { "GutAuthorId" });
             DropIndex("dbo.EpubFile", new[] { "GutBookId" });
             DropColumn("dbo.EpubFile", "GutBookWithImages");
             DropColumn("dbo.EpubFile", "GutBookId");
-            DropTable("dbo.GutAuthors");
-            DropTable("dbo.GutBooks");
+            DropTable("dbo.GutAuthor");
+            DropTable("dbo.GutBook");
         }
     }
 }

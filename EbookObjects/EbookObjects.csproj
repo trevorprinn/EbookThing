@@ -114,6 +114,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Misc\loadrdfs.linq" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

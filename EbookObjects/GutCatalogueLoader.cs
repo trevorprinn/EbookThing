@@ -31,23 +31,42 @@ namespace EbookObjects {
         }
 
         public void Load(XDocument booksdoc) {
+
+            loadAuthors(booksdoc);
+
             int count = 0;
+            var newBooks = new List<GutBook>();
             foreach (var book in booksdoc.Root.Elements("Book")) {
                 var gutBookId = (int)book.Attribute("Id");
-                var gutBook = GutBook.Get(_db, gutBookId);
+                var gutBook = _db.GutBooks.SingleOrDefault(gb => gb.GutBookId == gutBookId);
+                if (gutBook == null) {
+                    gutBook = new GutBook { GutBookId = gutBookId };
+                    newBooks.Add(gutBook);
+                }
                 gutBook.Title = book.Attribute("Title").Value;
-                gutBook.GutAuthor = GutAuthor.Get(_db, book.Attribute("Author")?.Value);
+                string author = book.Attribute("Author")?.Value;
+                gutBook.GutAuthor = author == null ? null : _db.GutAuthors.Single(a => a.Name == author);
                 gutBook.Language = book.Attribute("Language").Value;
                 gutBook.EpubUrlNoImages = book.Attribute("EpubUrlNoImages")?.Value;
                 gutBook.EpubUrlImages = book.Attribute("EpubUrlImages")?.Value;
                 gutBook.ThumbnailUrl = book.Attribute("ThumbnailUrl")?.Value;
                 gutBook.CoverUrl = book.Attribute("CoverUrl")?.Value;
 
-                if (++count >= 100) {
+                if (++count >= 1000) {
+                    _db.GutBooks.AddRange(newBooks);
+                    newBooks.Clear();
                     _db.SaveChanges();
                     count = 0;
                 }
             }
+            _db.GutBooks.AddRange(newBooks);
+            _db.SaveChanges();
+        }
+
+        private void loadAuthors(XDocument booksdoc) {
+            var toAdd = booksdoc.Root.Elements("Book").Select(r => r.Attribute("Author")?.Value).Distinct()
+                .Where(a => a != null).Except(_db.GutAuthors.Select(ga => ga.Name)).Select(a => new GutAuthor { Name = a });
+            _db.GutAuthors.AddRange(toAdd);
             _db.SaveChanges();
         }
     }
