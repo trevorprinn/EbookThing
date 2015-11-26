@@ -1,0 +1,38 @@
+﻿@model EbookSite.Models.GutenbergViewModel
+
+@{
+    ViewBag.Title = "Gutenberg Search";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form action="/Gutenberg/Index" method="get">
+    @Html.DisplayNameFor(model => model.Filter)
+    @Html.TextBoxFor(model => model.Filter)
+    <input type="submit" name="submit" value="Apply Filter" />
+</form>
+
+<table class="table">
+    <tr>
+        <th>Author</th>
+        <th>Title</th>
+    </tr>
+
+@foreach (var item in Model.Books) {
+    <tr>
+        <td>@Html.DisplayFor(m => item.Author)</td>
+        <td>@Html.DisplayFor(m => item.Title)</td>
+        <td><a href='@Url.Action("Cover", new { bookId = item.Id })'><img src='@Url.Action("ShowGutThumbnail", "BookImage", new { bookId = item.Id })' /></a></td>
+        <td>
+            @if (!string.IsNullOrWhiteSpace(item.ImagesLink)) {
+                @Html.ActionLink("Obtain (Images)", "Download", new { gutBookId = item.Id, images = true });
+                @: |
+            }
+            @if (!string.IsNullOrWhiteSpace(item.NoImagesLink)) {
+                @Html.ActionLink("Obtain (No Images)", "Download", new { gutBookId = item.Id, images = false });
+            }
+        </td>
+    </tr>
+}
+
+</table>

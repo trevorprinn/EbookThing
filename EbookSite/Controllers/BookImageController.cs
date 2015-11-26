@@ -27,5 +27,20 @@ namespace EbookSite.Controllers
                 return new FileStreamResult(new MemoryStream(pic), type);
             }
         }
+
+        public ActionResult ShowGutThumbnail(int bookId) {
+            using (var db = new EbooksContext()) {
+                var thumbnail = db.GutBooks.Single(b => b.GutBookId == bookId).GetThumbnailData() ?? Cover.EmptyThumbnail;
+                db.SaveChanges();   // May have read and cached the thumbnail data
+                return new FileStreamResult(new MemoryStream(thumbnail), "image/jpeg");
+            }
+        }
+
+        public ActionResult ShowGutCover(int bookId) {
+            using (var db = new EbooksContext()) {
+                var cover = db.GutBooks.Single(b => b.GutBookId == bookId).GetCoverData() ?? Cover.EmptyCover;
+                return new FileStreamResult(new MemoryStream(cover), "image/jpeg");
+            }
+        }
     }
 }

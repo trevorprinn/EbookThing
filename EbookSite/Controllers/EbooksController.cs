@@ -81,5 +81,14 @@ namespace EbookSite.Controllers
                 return View(model);
             }
         }
+
+        public ActionResult Download(int bookId) {
+            using (var db = new EbooksContext()) {
+                var user = db.GetEbooksUser(User);
+                var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
+                if (book == null) return RedirectToAction("Index");
+                return File(book.EpubFile.Contents, System.Net.Mime.MediaTypeNames.Application.Octet, book.Title + ".epub");
+            }
+        }
     }
 }

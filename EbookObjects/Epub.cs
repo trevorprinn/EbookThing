@@ -83,6 +83,8 @@ namespace EbookObjects {
         /// <param name="book"></param>
         public Epub(Models.Book book) : this(new MemoryStream(book.EpubFile.Contents)) { }
 
+        public Epub(byte[] data) : this(new MemoryStream(data)) { }
+
         protected virtual void Dispose(bool disposing) {
             if (_coverStream != null) _coverStream.Dispose();
             if (_zip != null) _zip.Dispose();

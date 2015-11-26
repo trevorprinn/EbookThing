@@ -85,6 +85,7 @@
     <Compile Include="ModelAdditions\EpubFile.cs" />
     <Compile Include="ModelAdditions\Publisher.cs" />
     <Compile Include="ModelAdditions\Series.cs" />
+    <Compile Include="ModelAdditions\User.cs" />
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Book.cs" />
     <Compile Include="Models\BookIdent.cs" />
