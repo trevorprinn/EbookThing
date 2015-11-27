@@ -45,7 +45,11 @@ namespace EbookSite.Controllers
                 }
                 try {
                     var user = db.GetEbooksUser(User);
-                    Book.Load(db, ep, user.UserId);
+                    var book = Book.Load(db, ep, user.UserId);
+                    if (ef == null) {
+                        book.EpubFile.GutBookId = gutBook.GutBookId;
+                        book.EpubFile.GutBookWithImages = images;
+                    }
                     db.SaveChanges();
                 } finally {
                     ep.Dispose();
