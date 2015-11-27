@@ -7,21 +7,69 @@
 <h2>@Model.Title</h2>
 
 <p>
-    @Html.ActionLink("Previous", "Index", new { bookId = Model.BookId, spineIndex = Model.SpineIndex - 1 })
-    @Html.ActionLink("Next", "Index", new { bookId = Model.BookId, spineIndex = Model.SpineIndex + 1 })
-
+    @Ajax.ActionLink("Previous", "ChangePage", new { bookId = Model.BookId, spineIndex = Model.SpineIndex - 1 },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "changePage" }, new { id = "PreviousLink" })
+    <span class="disabled" id="PreviousLinkDis">Previous</span>
+    |
+    @Ajax.ActionLink("Next", "ChangePage", new { bookId = Model.BookId, spineIndex = Model.SpineIndex + 1 },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "changePage" }, new { id = "NextLink" })
+    <span class="disabled" id="NextLinkDis">Next</span>
+    |
+    <a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a>
 </p>
-@Model.Url
+
+@if (Model.CanPrevious) {
+    <script>
+    $('#PreviousLinkDis').attr('hidden', 'hidden');
+    </script>
+} else {
+    <script>
+    $('#PreviousLink').attr('hidden', 'hidden');
+    </script>
+}
+@if (Model.CanNext) {
+    <script>
+    $('#NextLinkDis').attr('hidden', 'hidden');
+    </script>
+} else {
+    <script>
+    $('#NextLink').attr('hidden', 'hidden');
+    </script>
+}
+
+<script>
+    function changePage(result) {
+        $('#iFrame').attr('src', result.url);
+        if (result.canPrevious) {
+            $('#PreviousLinkDis').attr('hidden', 'hidden');
+            $('#PreviousLink').removeAttr('hidden');
+            $('#PreviousLink').attr('href', '/ReadBook/ChangePage?bookId=' + result.bookId + '&spineIndex=' + (result.spineIndex - 1));
+        } else {
+            $('#PreviousLinkDis').removeAttr('hidden');
+            $('#PreviousLink').attr('hidden', 'hidden');
+        }
+        if (result.canNext) {
+            $('#NextLinkDis').attr('hidden', 'hidden');
+            $('#NextLink').removeAttr('hidden');
+            $('#NextLink').attr('href', '/ReadBook/ChangePage?bookId=' + result.bookId + '&spineIndex=' + (result.spineIndex + 1));
+        } else {
+            $('#NextLinkDis').removeAttr('hidden');
+            $('#NextLink').attr('hidden', 'hidden');
+        }
+    }
+</script>
 
 <iframe id="iFrame" style="width:100%" src="@Model.Url"></iframe>
 
+<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
+
 <script>
     $().ready(function () {
-        $('#iFrame').height($(window).height() - 200);
-    });
+        $('#iFrame').height($(window).height() - 300);
+});
 
 
     $(window).resize(function () {
-        $('#iFrame').height($(window).height() - 200);
+        $('#iFrame').height($(window).height() - 300);
     });
 </script>

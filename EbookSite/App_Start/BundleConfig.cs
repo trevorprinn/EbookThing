@@ -29,6 +29,9 @@ namespace EbookSite {
 
             bundles.Add(new StyleBundle("~/bundles/jHtmlAreaCss").Include(
                 "~/Content/jHtmlArea/jHtmlArea.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/jqueryunobtrusive").Include(
+                "~/Scripts/jquery.unobtrusive-ajax.min.js"));
         }
     }
 }
