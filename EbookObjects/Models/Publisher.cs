@@ -5,13 +5,10 @@ namespace EbookObjects.Models
 {
     public partial class Publisher
     {
-        public Publisher()
-        {
-            this.Books = new List<Book>();
-        }
+        public Publisher() { }
 
         public int PublisherId { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<Book> Books { get; set; }
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

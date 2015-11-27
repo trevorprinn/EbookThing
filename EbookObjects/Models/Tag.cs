@@ -5,13 +5,10 @@ namespace EbookObjects.Models
 {
     public partial class Tag
     {
-        public Tag()
-        {
-            this.Books = new List<Book>();
-        }
+        public Tag() { }
 
         public int TagId { get; set; }
         public string Item { get; set; }
-        public virtual ICollection<Book> Books { get; set; }
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

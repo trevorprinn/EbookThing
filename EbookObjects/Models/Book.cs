@@ -5,11 +5,7 @@ namespace EbookObjects.Models
 {
     public partial class Book
     {
-        public Book()
-        {
-            this.BookIdents = new List<BookIdent>();
-            this.Tags = new List<Tag>();
-        }
+        public Book() { }
 
         public int BookId { get; set; }
         public int UserId { get; set; }
@@ -27,7 +23,7 @@ namespace EbookObjects.Models
         public virtual Publisher Publisher { get; set; }
         public virtual Series Series { get; set; }
         public virtual User User { get; set; }
-        public virtual ICollection<BookIdent> BookIdents { get; set; }
-        public virtual ICollection<Tag> Tags { get; set; }
+        public virtual ICollection<BookIdent> BookIdents { get; set; } = new List<BookIdent>();
+        public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
     }
 }
