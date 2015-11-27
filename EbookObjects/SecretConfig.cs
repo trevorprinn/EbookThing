@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -18,7 +20,9 @@ namespace EbookObjects {
         private static XDocument _doc;
 
         static SecretConfig() {
-            _doc = XDocument.Load("EbookObjects.Secret.xml");
+            using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("EbookObjects.EbookObjects.Secret.xml")) {
+                _doc = XDocument.Load(s);
+            }
         }
 
         public static string GoogleBooksApiKey => _doc.Root.Element("GoogleBooksApiKey")?.Value;
