@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Admin";
+}
+
+<h2>Admin</h2>
+
+@using (Html.BeginForm("UploadGutCatalogue", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    <fieldset>
+        <legend>Upload Gutenberg Catalogue</legend>
+        <div class="editor-field">
+            @Html.TextBox("file", "", new { type = "file", multiple = "multiple" })
+        </div>
+        <div class="editor-field">
+            <input type="submit" value="Upload" />
+        </div>
+    </fieldset>
+    if (ViewBag.Uploaded != null && ViewBag.Uploaded) { <p>Gutenberg Catalogue Uploaded and applied</p> }
+}
