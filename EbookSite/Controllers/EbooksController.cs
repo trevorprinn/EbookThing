@@ -90,5 +90,17 @@ namespace EbookSite.Controllers
                 return File(book.EpubFile.Contents, System.Net.Mime.MediaTypeNames.Application.Octet, book.Title + ".epub");
             }
         }
+
+        public ActionResult Delete(int bookId) {
+            using (var db = new EbooksContext()) {
+                var user = db.GetEbooksUser(User);
+                var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
+                if (book != null) {
+                    db.Books.Remove(book);
+                    db.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
