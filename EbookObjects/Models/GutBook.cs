@@ -26,15 +26,25 @@ namespace EbookObjects.Models {
         [MaxLength(5)]
         public string Language { get; set; }
 
+        public bool StandardEpubUrlNoImages { get; set; }
+
+        public bool StandardEpubUrlImages { get; set; }
+
         public string EpubUrlNoImages { get; set; }
 
         public string EpubUrlImages { get; set; }
+
+        public bool StandardThumbnailUrl { get; set; }
+
+        public bool StandardCoverUrl { get; set; }
 
         public string ThumbnailUrl { get; set; }
 
         public byte[] ThumbnailData { get; set; }
 
         public string CoverUrl { get; set; }
+
+
 
         public virtual ICollection<EpubFile> EpubFiles { get; set; }
 
@@ -50,18 +60,21 @@ namespace EbookObjects.Models {
         }
 
         public byte[] GetEpubNoImages() {
-            if (string.IsNullOrWhiteSpace(EpubUrlNoImages)) return null;
-            return getFile(EpubUrlNoImages);
+            if (!StandardEpubUrlNoImages && string.IsNullOrWhiteSpace(EpubUrlNoImages)) return null;
+            string url = StandardEpubUrlNoImages ? $"http://www.gutenberg.org/ebooks/{GutBookId}.epub.noimages" : EpubUrlNoImages;
+            return getFile(url);
         }
         public byte[] GetEpubImages() {
-            if (string.IsNullOrWhiteSpace(EpubUrlImages)) return null;
-            return getFile(EpubUrlImages);
+            if (!StandardEpubUrlImages && string.IsNullOrWhiteSpace(EpubUrlImages)) return null;
+            string url = StandardEpubUrlImages ? $"http://www.gutenberg.org/ebooks/{GutBookId}.epub.images" : EpubUrlImages;
+            return getFile(url);
         }
 
         public byte[] GetThumbnailData() {
             if (ThumbnailData != null) return ThumbnailData;
-            if (string.IsNullOrWhiteSpace(ThumbnailUrl)) return null;
-            ThumbnailData = getFile(ThumbnailUrl);
+            if (!StandardThumbnailUrl && string.IsNullOrWhiteSpace(ThumbnailUrl)) return null;
+            string url = StandardThumbnailUrl ? $"http://www.gutenberg.org/cache/epub/{GutBookId}/pg{GutBookId}.cover.small.jpg" : ThumbnailUrl;
+            ThumbnailData = getFile(url);
             return ThumbnailData;
         }
 
@@ -72,8 +85,9 @@ namespace EbookObjects.Models {
         }
 
         public byte[] GetCoverData() {
-            if (string.IsNullOrWhiteSpace(CoverUrl)) return null;
-            return getFile(CoverUrl);
+            if (!StandardCoverUrl && string.IsNullOrWhiteSpace(CoverUrl)) return null;
+            string url = StandardCoverUrl ? $"http://www.gutenberg.org/cache/epub/{GutBookId}/pg{GutBookId}.cover.medium.jpg" : CoverUrl;
+            return getFile(url);
         }
     }
 }

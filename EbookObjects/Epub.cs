@@ -251,7 +251,7 @@ namespace EbookObjects {
             string coverFile, contentType;
             getCoverInfo(out coverFile, out contentType);
             if (coverFile == null) return null;
-            var entry = _zip.Entries.SingleOrDefault(e => e.FullName == coverFile);
+            var entry = _zip.Entries.SingleOrDefault(e => e.FullName == getFullPath(coverFile));
             if (entry == null) return null;
             using (var s = entry.Open())
             using (var m = new MemoryStream()) {

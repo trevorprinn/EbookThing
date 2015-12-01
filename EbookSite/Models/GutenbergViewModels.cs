@@ -10,15 +10,15 @@ namespace EbookSite.Models {
             public int Id { get; }
             public string Author { get; }
             public string Title { get; }
-            public string ImagesLink { get; }
-            public string NoImagesLink { get; }
+            public bool HasImagesEpub { get; }
+            public bool HasNoImagesEpub { get; }
 
             public Book(GutBook book) {
                 Id = book.GutBookId;
                 Author = book.GutAuthor?.Name;
                 Title = book.Title;
-                ImagesLink = book.EpubUrlImages;
-                NoImagesLink = book.EpubUrlNoImages;
+                HasImagesEpub = book.StandardEpubUrlImages || !string.IsNullOrWhiteSpace(book.EpubUrlImages);
+                HasNoImagesEpub = book.StandardEpubUrlNoImages || !string.IsNullOrWhiteSpace(book.EpubUrlNoImages);
             }
         }
 

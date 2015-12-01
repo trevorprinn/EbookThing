@@ -67,6 +67,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\201512011552318_GutStandardUrls.cs" />
+    <Compile Include="Migrations\201512011552318_GutStandardUrls.Designer.cs">
+      <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
+    </Compile>
     <Compile Include="SecretConfig.cs" />
     <Compile Include="Epub.cs" />
     <Compile Include="Extensions.cs" />
@@ -134,6 +138,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511251636301_Gutenberg.resx">
       <DependentUpon>201511251636301_Gutenberg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512011552318_GutStandardUrls.resx">
+      <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

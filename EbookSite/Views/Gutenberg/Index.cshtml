@@ -24,11 +24,11 @@
         <td>@Html.DisplayFor(m => item.Title)</td>
         <td><a href='@Url.Action("Cover", new { bookId = item.Id })'><img src='@Url.Action("ShowGutThumbnail", "BookImage", new { bookId = item.Id })' /></a></td>
         <td>
-            @if (!string.IsNullOrWhiteSpace(item.ImagesLink)) {
+            @if (item.HasImagesEpub) {
                 @Html.ActionLink("Import (Images)", "Download", new { gutBookId = item.Id, images = true });
                 @: |
             }
-            @if (!string.IsNullOrWhiteSpace(item.NoImagesLink)) {
+            @if (item.HasNoImagesEpub) {
                 @Html.ActionLink("Import (No Images)", "Download", new { gutBookId = item.Id, images = false });
             }
         </td>

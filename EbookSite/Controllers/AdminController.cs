@@ -31,7 +31,9 @@ namespace EbookSite.Controllers
             if (Request.Files.Count > 0) {
                 HttpPostedFileBase hpf = Request.Files[0] as HttpPostedFileBase;
                 if (hpf.ContentLength == 0) return View("Index");
-                new GutCatalogueLoader().Load(XDocument.Load(hpf.InputStream));
+                using (var s = hpf.InputStream) {
+                    new GutCatalogueLoader().Load(s);
+                }
                 ViewBag.Uploaded = true;
             }
             return View("Index");

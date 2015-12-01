@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EbookObjects.Models;
 using System.Xml.Linq;
+using System.IO;
 
 namespace EbookObjects {
     /// <summary>
@@ -30,44 +31,66 @@ namespace EbookObjects {
             GC.SuppressFinalize(this);
         }
 
-        public void Load(XDocument booksdoc) {
-
-            loadAuthors(booksdoc);
+        public void Load(Stream input) {
 
             int count = 0;
             var newBooks = new List<GutBook>();
-            foreach (var book in booksdoc.Root.Elements("Book")) {
-                var gutBookId = (int)book.Attribute("Id");
-                var gutBook = _db.GutBooks.SingleOrDefault(gb => gb.GutBookId == gutBookId);
-                if (gutBook == null) {
-                    gutBook = new GutBook { GutBookId = gutBookId };
-                    newBooks.Add(gutBook);
-                }
-                gutBook.Title = book.Attribute("Title").Value;
-                string author = book.Attribute("Author")?.Value;
-                gutBook.GutAuthor = author == null ? null : _db.GutAuthors.Single(a => a.Name == author);
-                gutBook.Language = book.Attribute("Language").Value;
-                gutBook.EpubUrlNoImages = book.Attribute("EpubUrlNoImages")?.Value;
-                gutBook.EpubUrlImages = book.Attribute("EpubUrlImages")?.Value;
-                gutBook.ThumbnailUrl = book.Attribute("ThumbnailUrl")?.Value;
-                gutBook.CoverUrl = book.Attribute("CoverUrl")?.Value;
+            var newAuthors = new List<GutAuthor>();
 
-                if (++count >= 1000) {
-                    _db.GutBooks.AddRange(newBooks);
-                    newBooks.Clear();
-                    _db.SaveChanges();
-                    count = 0;
+            using (var reader = new StreamReader(input)) {
+                foreach (var book in reader.FromCsv<BookData>()) {
+                    var gutBook = _db.GutBooks.SingleOrDefault(gb => gb.GutBookId == book.Id);
+                    if (gutBook == null) {
+                        gutBook = new GutBook { GutBookId = book.Id };
+                        newBooks.Add(gutBook);
+                    }
+                    gutBook.Title = book.Title;
+                    var gutAuthor = newAuthors.SingleOrDefault(a => a.Name == book.Author);
+                    if (gutAuthor == null) gutAuthor = _db.GutAuthors.SingleOrDefault(a => a.Name == book.Author);
+                    if (gutAuthor == null && book.Author != null) {
+                        gutAuthor = new GutAuthor { Name = book.Author };
+                        newAuthors.Add(gutAuthor);
+                    }
+                    gutBook.GutAuthor = gutAuthor;
+                    gutBook.Language = book.Language;
+                    gutBook.StandardEpubUrlNoImages = book.StandardEpubUrlNoImages;
+                    gutBook.StandardEpubUrlImages = book.StandardEpubUrlImages;
+                    gutBook.EpubUrlNoImages = book.EpubUrlNoImages;
+                    gutBook.EpubUrlImages = book.EpubUrlImages;
+                    gutBook.StandardThumbnailUrl = book.StandardThumbnailUrl;
+                    gutBook.StandardCoverUrl = book.StandardCoverUrl;
+                    gutBook.ThumbnailUrl = book.ThumbnailUrl;
+                    gutBook.CoverUrl = book.CoverUrl;
+
+                    if (++count >= 1000) {
+                        _db.GutAuthors.AddRange(newAuthors);
+                        newAuthors.Clear();
+                        _db.GutBooks.AddRange(newBooks);
+                        newBooks.Clear();
+                        _db.SaveChanges();
+                        count = 0;
+                    }
                 }
             }
+
+            _db.GutAuthors.AddRange(newAuthors);
             _db.GutBooks.AddRange(newBooks);
             _db.SaveChanges();
         }
 
-        private void loadAuthors(XDocument booksdoc) {
-            var toAdd = booksdoc.Root.Elements("Book").Select(r => r.Attribute("Author")?.Value).Distinct()
-                .Where(a => a != null).Except(_db.GutAuthors.Select(ga => ga.Name)).Select(a => new GutAuthor { Name = a });
-            _db.GutAuthors.AddRange(toAdd);
-            _db.SaveChanges();
+        private class BookData {
+            public int Id { get; set;}
+            public string Title { get; set; }
+            public string Author { get; set; }
+            public string Language { get; set; }
+            public bool StandardEpubUrlNoImages { get; set; }
+            public bool StandardEpubUrlImages { get; set; }
+            public string EpubUrlNoImages { get; set; }
+            public string EpubUrlImages { get; set; }
+            public bool StandardThumbnailUrl { get; set; }
+            public bool StandardCoverUrl { get; set; }
+            public string ThumbnailUrl { get; set; }
+            public string CoverUrl { get; set; }
         }
     }
 }
