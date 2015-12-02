@@ -7,13 +7,14 @@
 
 <h2>Edit</h2>
 
+@Scripts.Render("~/bundles/jHtmlArea")
+@Styles.Render("~/bundles/jHtmlAreaCss")
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.BookId)
 
-    @Scripts.Render("~/bundles/jHtmlArea")
-    @Styles.Render("~/bundles/jHtmlAreaCss")
 
     <div class="form-horizontal">
         <hr />
@@ -21,7 +22,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextAreaFor(model => model.Title, 3, 200, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -44,10 +45,9 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-12">
-                @Html.TextAreaFor(model => model.Description, 10, 300, new { style = "max-width: 700px" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description, 10, 300, new { style = "max-width: 100%" })
                 @Html.ValidationMessageFor(model => model.Description, "", new {  @class = "text-danger"})
-                <script>$('#Description').htmlarea()</script>
             </div>
         </div>
 
@@ -58,6 +58,22 @@
         </div>
     </div>
 }
+
+<script>
+    // Use a custom toolbar because bootstrap messes up the button heights for the header style buttons
+    $('#Description').htmlarea({
+        toolbar: [
+            ["html"],
+            ["bold", "italic", "underline", "strikethrough"],
+            ["subscript", "superscript"],
+            ["increasefontsize", "decreasefontsize"],
+            ["orderedlist", "unorderedlist"],
+            ["p"],
+            ["cut", "copy", "paste"]
+        ]
+    })
+</script>
+
 
 <div>
     @Html.ActionLink("Back to List", "Index")
