@@ -17,7 +17,7 @@ namespace EbookSite.Models {
             public DisplayBook(EbookObjects.Models.Book book) {
                 BookId = book.BookId;
                 Title = book.Title;
-                Author = book.Author.Name;
+                Author = book.Author?.Name;
             }
         }
 
@@ -34,13 +34,13 @@ namespace EbookSite.Models {
     public class BookViewModel {
         public string Title { get; }
 
-        public string Author { get; }
+        public int? Author { get; }
 
         public SelectList Authors { get; }
 
         public int BookId { get; }
 
-        public string Publisher { get; }
+        public int? Publisher { get; }
 
         public SelectList Publishers { get; }
 
@@ -49,10 +49,10 @@ namespace EbookSite.Models {
         public BookViewModel(Book book, EbooksContext db) {
             BookId = book.BookId;
             Title = book.Title;
-            Author = book.Author?.Name;
-            Authors = new SelectList(db.Authors.Where(a => a.Books.Any(b => b.UserId == book.UserId)).ToArray(), "AuthorId", "Name", Author);
-            Publisher = book.Publisher?.Name;
-            Publishers = new SelectList(db.Publishers.Where(p => p.Books.Any(b => b.UserId == book.UserId)).ToArray(), "PublisherId", "Name", Publisher);
+            Author = book.Author?.AuthorId;
+            Authors = new SelectList(new Author[] { new Author() }.Concat(db.Authors.Where(a => a.Books.Any(b => b.UserId == book.UserId))).ToArray(), "AuthorId", "Name", Author);
+            Publisher = book.Publisher?.PublisherId;
+            Publishers = new SelectList(new Publisher[] { new Publisher() }.Concat(db.Publishers.Where(p => p.Books.Any(b => b.UserId == book.UserId))).ToArray(), "PublisherId", "Name", Publisher);
             Description = book.Description;
         }
     }
@@ -61,7 +61,22 @@ namespace EbookSite.Models {
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
+        public int? AuthorId {
+            get {
+                int id;
+                if (int.TryParse(Author, out id)) return id;
+                return null;
+            }
+        }
         public string Publisher { get; set; }
+        public int? PublisherId {
+            get {
+                int id;
+                if (int.TryParse(Publisher, out id)) return id;
+                return null;
+            }
+        }
+
         [AllowHtml]
         public string Description { get; set; }
     }

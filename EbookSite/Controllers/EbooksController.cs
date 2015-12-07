@@ -63,8 +63,17 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 var book = db.Books.Single(b => b.BookId == model.BookId);
                 book.Title = model.Title;
-                book.Author = Author.Get(db, model.Author);
-                book.Publisher = Publisher.Get(db, model.Publisher);
+                if (model.Author.StartsWith("~")) {
+                    book.Author = Author.Get(db, model.Author.Substring(1));
+                } else {
+                    book.AuthorId = model.AuthorId != 0 ? model.AuthorId : null;
+                }
+                if (model.Publisher.StartsWith("~")) {
+                    book.Publisher = Publisher.Get(db, model.Publisher.Substring(1));
+                } else {
+                    book.PublisherId = model.PublisherId != 0 ? model.PublisherId : null;
+                }
+
                 book.Description = model.Description;
                 db.SaveChanges();
             }

@@ -11,20 +11,20 @@ namespace EbookSite {
     // Originally from http://veadas.net/article/aspnet-mvc-combo-box
     public static class ComboBoxHelpers {
   
-        public static MvcHtmlString ComboBox(this HtmlHelper html, string name, SelectList items, string selectedValue) {
+        public static MvcHtmlString ComboBox(this HtmlHelper html, string name, SelectList items, object htmlAttributes = null, bool allowAny = true, string prependNewValue = "", string appendNewValue = "") {
             StringBuilder sb = new StringBuilder();
-            sb.Append(html.DropDownList(name + "_hidden", items, new { @style = "width: 200px;", @onchange = "$('input#" + name + "').val($(this).children(':selected').text());" }));
-            sb.Append(html.TextBox(name, selectedValue, new { @style = "margin-left: -199px; width: 179px; height: 1.2em; border: 0;" }));
+            sb.Append(html.DropDownList(name, items, htmlAttributes));
+            sb.Append($"<script>$('#{name}').combobox({{allowAny:{allowAny.ToString().ToLower()}, prependNewValue:'{prependNewValue}', appendNewValue:'{appendNewValue}'}});</script>");
             return MvcHtmlString.Create(sb.ToString());
         }
 
-        public static MvcHtmlString ComboBoxFor<TModel, TProperty>(this HtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, SelectList items) {
+        public static MvcHtmlString ComboBoxFor<TModel, TProperty>(this HtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, SelectList items, object htmlAttributes = null, bool allowAny = true, string prependNewValue = "", string appendNewValue = "") {
             MemberExpression me = (MemberExpression)expression.Body;
             string name = me.Member.Name;
 
             StringBuilder sb = new StringBuilder();
-            sb.Append(html.DropDownList(name + "_hidden", items, new { @style = "width: 200px;", @onchange = "$('input#" + name + "').val($(this).children(':selected').text());" }));
-            sb.Append(html.TextBoxFor(expression, new { @style = "margin-left: -199px; width: 179px; height: 1.2em; border: 0;" }));
+            sb.Append(html.DropDownList(name, items, htmlAttributes));
+            sb.Append($"<script>$('#{name}').combobox({{allowAny:{allowAny.ToString().ToLower()}, prependNewValue:'{prependNewValue}', appendNewValue:'{appendNewValue}'}});</script>");
             return MvcHtmlString.Create(sb.ToString());
         }
     }

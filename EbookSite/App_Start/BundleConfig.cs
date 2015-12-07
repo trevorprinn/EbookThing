@@ -36,6 +36,12 @@ namespace EbookSite {
 
             bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
                 "~/Content/themes/base/all.css"));
+
+            bundles.Add(new StyleBundle("~/Content/combo").Include(
+                "~/Content/combo.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/combo").Include(
+                "~/Scripts/combo.js"));
         }
     }
 }

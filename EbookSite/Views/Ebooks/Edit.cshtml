@@ -10,6 +10,9 @@
 @Scripts.Render("~/bundles/jHtmlArea")
 @Styles.Render("~/bundles/jHtmlAreaCss")
 
+@Scripts.Render("~/bundles/combo")
+@Styles.Render("~/Content/combo")
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -30,7 +33,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Author, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.ComboBoxFor(model => model.Author, Model.Authors)
+                @Html.ComboBoxFor(model => model.Author, Model.Authors, prependNewValue: "~")
                 @Html.ValidationMessageFor(model => model.Author, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -38,7 +41,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Publisher, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.ComboBoxFor(model => model.Publisher, Model.Publishers)
+                @Html.ComboBoxFor(model => model.Publisher, Model.Publishers, prependNewValue: "~")
                 @Html.ValidationMessageFor(model => model.Publisher, "", new { @class = "text-danger" })
             </div>
         </div>
