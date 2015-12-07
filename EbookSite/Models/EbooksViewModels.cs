@@ -26,9 +26,6 @@ namespace EbookSite.Models {
         public IEnumerable<Book> BookSet {
             set { Books = value.Select(b => new DisplayBook(b)).ToArray(); }
         }
-
-        [Display(Name = "Filter")]
-        public string Filter { get; set; }
     }
 
     public class BookViewModel {

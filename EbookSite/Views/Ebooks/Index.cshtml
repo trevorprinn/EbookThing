@@ -10,6 +10,9 @@
     @Html.ActionLink("Upload", "Upload")
 </p>
 
+@Styles.Render("~/Content/datatables")
+@Scripts.Render("~/bundles/datatables")
+
 <script>
     function showConfirmDlg(title, url) {
         $(function () {
@@ -33,16 +36,15 @@
     }
 </script>
 
-<form action="/Ebooks/Index" method="get">
-    @Html.DisplayNameFor(model => model.Filter)
-    @Html.TextBoxFor(model => model.Filter)
-    <input type="submit" name="submit" value="Apply Filter" />
-</form>
-<table class="table">
-    <tr>
-        <th>Author</th>
-        <th>Title</th>
-    </tr>
+<table class="table" id="books">
+    <thead>
+        <tr>
+            <th>Author</th>
+            <th>Title</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
 
 @foreach (var item in Model.Books) {
     <tr>
@@ -59,6 +61,16 @@
 }
 
 </table>
+<script>
+    $(document).ready(function () {
+        $('#books').dataTable({
+            "columnDefs": [
+                { "orderable": false, "searchable": false, "targets": [2, 3] }
+            ],
+            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]
+        });
+    });
+</script>
 
 <div id="dlg-confirm" style="display:none">
     <p>This book will be deleted from your shelf.<br/>Are you sure?</p>

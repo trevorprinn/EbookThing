@@ -14,14 +14,9 @@ namespace EbookSite.Controllers
     public class EbooksController : Controller
     {
         // GET: Ebooks
-        public ActionResult Index(string filter) {
+        public ActionResult Index() {
             using (var db = new EbooksContext()) {
-                var books = db.GetEbooksUser(User).Books.AsEnumerable();
-                if (!string.IsNullOrWhiteSpace(filter)) {
-                    var usefilter = filter.ToLower();
-                    books = books.Where(b => b.Title.ToLower().Contains(usefilter));
-                }
-                var model = new DisplayBooksViewModel { Filter = filter, BookSet = books };
+                var model = new DisplayBooksViewModel { BookSet = db.GetEbooksUser(User).Books };
                 return View(model);
             }
         }

@@ -42,6 +42,12 @@ namespace EbookSite {
 
             bundles.Add(new ScriptBundle("~/bundles/combo").Include(
                 "~/Scripts/combo.js"));
+
+            bundles.Add(new StyleBundle("~/Content/datatables").Include(
+                "~/Content/DataTables/css/jquery.dataTables.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
+                "~/Scripts/DataTables/jquery.dataTables.js"));
         }
     }
 }
