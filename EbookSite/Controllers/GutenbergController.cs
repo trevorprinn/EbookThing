@@ -46,6 +46,7 @@ namespace EbookSite.Controllers
                 try {
                     var user = db.GetEbooksUser(User);
                     var book = Book.Load(db, ep, user.UserId);
+                    if (book.Publisher == null) book.Publisher = Publisher.Get(db, "Project Gutenberg");
                     if (ef == null) {
                         book.EpubFile.GutBookId = gutBook.GutBookId;
                         book.EpubFile.GutBookWithImages = images;
