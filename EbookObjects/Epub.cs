@@ -298,6 +298,8 @@ namespace EbookObjects {
         /// <returns></returns>
         public XDocument GetOpf() => new XDocument(_opf);
 
+        public IEnumerable<string> ManifestRefs => manifest.Elements(_ns + "item").Select(e => e.Attribute("href").Value);
+
         /// <summary>
         /// Outputs all of the files in the manifest to the given location.
         /// </summary>
