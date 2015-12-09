@@ -13,7 +13,7 @@ namespace EbookSite.Controllers
     public class ReadBookController : Controller
     {
         // GET: ReadBook
-        public ActionResult Index(int bookId = 0, int spineIndex = 0)
+        public ActionResult Index(int bookId = 0)
         {
             using (var db = new EbooksContext()) {
                 var user = db.GetEbooksUser(User);
@@ -21,13 +21,9 @@ namespace EbookSite.Controllers
                 if (book == null) return RedirectToAction("Index", "Ebooks");
                 using (var ep = new Epub(book)) {
                     var spine = ep.SpineRefs.ToArray();
-                    spineIndex = Math.Max(0, Math.Min(spineIndex, spine.Length - 1));
-                    string url = Url.Action($"ReadContent/{bookId}/{spine[spineIndex]}");
-
+                    string url = Url.Action($"ReadContent/{bookId}/{ep.RootFolder}");
+                    if (!url.EndsWith("/")) url += '/';
                     var model = new ReadBookViewModel {
-                        CanPrevious = spineIndex > 0,
-                        CanNext = spineIndex < spine.Length - 1,
-                        SpineIndex = spineIndex,
                         Title = book.Title,
                         Url = url,
                         BookId = bookId
@@ -44,7 +40,11 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 var book = db.Books.Single(b => b.BookId == bookId);
                 using (var ep = new Epub(book)) {
-                    return new FileStreamResult(ep.GetContentFile(file), "text/html");
+                    if (string.IsNullOrWhiteSpace(file) || file == ep.RootFolder) {
+                        return View("BookViewer", new BookViewerViewModel { Body = ep.Stitch() });
+                    } else {
+                        return new FileStreamResult(ep.GetContentFile(file, true), "text/html");
+                    }
                 }
             }
         }

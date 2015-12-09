@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using HtmlAgilityPack;
 
 namespace EbookObjects {
 
@@ -29,9 +30,11 @@ namespace EbookObjects {
         private static XNamespace _nsopf = @"http://www.idpf.org/2007/opf";
         private static XNamespace _calibre = @"http://calibre.kovidgoyal.net/2009/metadata";
 
-        // The root folder, defined in the container xml (which should always be in META-INF/container.xml)
-        // This is the folder where the opf file is stored, and is used as the root for internal hrefs.
-        private string _rootFolder;
+        /// <summary>
+        /// Gets the root folder, defined in the container xml (which should always be in META-INF/container.xml)
+        /// This is the folder where the opf file is stored, and is used as the root for internal hrefs.
+        /// </summary>
+        public string RootFolder { get; private set; }
 
         // Flags that the cover has been loaded and doesn't need to be reloaded if accessed again
         private bool _coverLoaded;
@@ -74,7 +77,7 @@ namespace EbookObjects {
             } catch (Exception ex) {
                 throw new EpubException("Error loading epub metadata", ex);
             }
-            _rootFolder = Path.GetDirectoryName(opfName);
+            RootFolder = Path.GetDirectoryName(opfName);
         }
 
         /// <summary>
@@ -224,7 +227,7 @@ namespace EbookObjects {
         /// <param name="path"></param>
         /// <returns></returns>
         private string getFullPath(string path) =>
-            string.IsNullOrEmpty(_rootFolder) ? path : _rootFolder + '/' + path;
+            string.IsNullOrEmpty(RootFolder) ? path : RootFolder + '/' + path;
 
         /// <summary>
         /// Gets the cover of the book.
@@ -328,8 +331,9 @@ namespace EbookObjects {
         /// </summary>
         /// <param name="path">Relative to the root folder</param>
         /// <returns></returns>
-        public Stream GetContentFile(string path) {
-            var arc = _zip.Entries.SingleOrDefault(a => a.FullName == getFullPath(path));
+        public Stream GetContentFile(string path, bool fullPath = false) {
+            if (!fullPath) path = getFullPath(path);
+            var arc = _zip.Entries.SingleOrDefault(a => a.FullName == path);
             if (arc == null) return new MemoryStream(0);
             var m = new MemoryStream();
             arc.Open().CopyTo(m);
@@ -355,6 +359,63 @@ namespace EbookObjects {
                 var arc = _zip.Entries.SingleOrDefault(a => a.FullName == getFullPath(tocref));
                 if (arc == null) return null;
                 using (var sa = arc.Open()) return new Toc(XDocument11.Load(sa));
+            }
+        }
+
+        /// <summary>
+        /// Stiches the spine documents together into one big html document.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// This is complicated by the fact that different documents within the epub can have different stylesheets
+        /// applied to them. To get around this, each body is wrapped within a div and scoped css is used to apply
+        /// style elements and stylesheets within that.
+        /// 
+        /// This routine returns the contents of the body element. It is up to the caller to add the header with scripting for jquery and
+        /// jquery.scoped (these aren't required by firefox, but they are by other browsers because they have no native
+        /// support for scoped styles).
+        /// </remarks>
+        public string Stitch() {
+            /*
+            //TODO Change the internal links to point to the divs created in here.
+            var body = new StringBuilder();
+            foreach (var doc in getHtmlDocs()) {
+                var nav = doc.CreateNavigator();
+                body.AppendLine("<div>");
+                foreach (HtmlNodeNavigator n in nav.Select("html/head/style|html/head/link")) {
+                    body.AppendLine("<style scoped=scoped>");
+                    if (n.Name == "style") {
+                        body.AppendLine(n.InnerXml);
+                    } else {
+                        var href = n.GetAttribute("href", "");
+                        // The commented out lines would include the css directly into the document.
+                        using (var cs = GetContentFile(href))
+                        using (var css = new StreamReader(cs)) {
+                            body.AppendLine(css.ReadToEnd());
+                        }
+                        //body.AppendLine($"@import url('{href}');");
+                    }
+                    body.AppendLine("</style>");
+                }
+                body.AppendLine(((HtmlNodeNavigator)nav.SelectSingleNode("html/body")).CurrentNode.InnerHtml);
+                body.AppendLine("</div>");
+            }
+            return body.ToString();
+            */
+            var body = new StringBuilder();
+            foreach (var href in SpineRefs) {
+                using (var r = new StreamReader(GetContentFile(href))) {
+                    body.AppendLine(r.ReadToEnd());
+                }
+            }
+            return body.ToString();
+        }
+
+        private IEnumerable<HtmlDocument> getHtmlDocs() {
+            foreach (var href in SpineRefs) {
+                var doc = new HtmlDocument();
+                doc.Load(GetContentFile(href), true);
+                yield return doc;
             }
         }
     }
