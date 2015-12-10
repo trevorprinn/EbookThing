@@ -30,7 +30,8 @@ namespace EbookSite.Controllers
                         SpineIndex = spineIndex,
                         Title = book.Title,
                         Url = url,
-                        BookId = bookId
+                        BookId = bookId,
+                        Toc = ep.Toc
                     };
 
                     return View(model);

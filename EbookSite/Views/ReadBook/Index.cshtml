@@ -59,17 +59,39 @@
     }
 </script>
 
-<iframe id="iFrame" style="width:100%" src="@Model.Url"></iframe>
+<script>
+    function jumpToPage(url) {
+        $('#iFrame').attr('src', 'ReadBook/ReadContent/' + @Model.BookId + '/' + url);
+    }
+</script>
+
+<table id="reader">
+    <tr style="height:100%">
+        <td style="width:30%">
+            <h3 id="toctitle">@Model.Toc.Title</h3>
+            <ul id="toclist" class="toc-list clearfix">
+                @foreach (var np in Model.Toc.NavPoints) {
+                    <li><a class="toc-item" onclick="jumpToPage('@np.Ref')">@np.Text</a></li>
+                }
+            </ul>
+        </td>
+        <td>
+            <iframe id="iFrame" style="width:100%;height:100%" src="@Model.Url"></iframe>
+        </td>
+    </tr>
+</table>
 
 <p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
 
 <script>
     $().ready(function () {
-        $('#iFrame').height($(window).height() - 300);
-});
+        $('#reader').height($(window).height() - 300);
+        $('#toclist').height($(window).height() - 300 - $('#toctitle').height());
+    });
 
 
     $(window).resize(function () {
-        $('#iFrame').height($(window).height() - 300);
+        $('#reader').height($(window).height() - 300);
+        $('#toclist').height($(window).height() - 300 - $('#toctitle').height());
     });
 </script>

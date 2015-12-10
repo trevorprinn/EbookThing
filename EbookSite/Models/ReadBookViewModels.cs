@@ -16,5 +16,7 @@ namespace EbookSite.Models {
         public string Url { get; set; }
 
         public int BookId { get; set; }
+
+        public EbookObjects.Toc Toc;
     }
 }
