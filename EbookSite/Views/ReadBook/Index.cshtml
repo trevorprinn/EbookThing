@@ -6,62 +6,30 @@
 
 <h2>@Model.Title</h2>
 
-<p>
-    @Ajax.ActionLink("Previous", "ChangePage", new { bookId = Model.BookId, spineIndex = Model.SpineIndex - 1 },
-        new AjaxOptions { HttpMethod = "POST", OnSuccess = "changePage" }, new { id = "PreviousLink" })
-    <span class="disabled" id="PreviousLinkDis">Previous</span>
-    |
-    @Ajax.ActionLink("Next", "ChangePage", new { bookId = Model.BookId, spineIndex = Model.SpineIndex + 1 },
-        new AjaxOptions { HttpMethod = "POST", OnSuccess = "changePage" }, new { id = "NextLink" })
-    <span class="disabled" id="NextLinkDis">Next</span>
-    |
-    <a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a>
-</p>
-
-@if (Model.CanPrevious) {
-    <script>
-    $('#PreviousLinkDis').attr('hidden', 'hidden');
-    </script>
-} else {
-    <script>
-    $('#PreviousLink').attr('hidden', 'hidden');
-    </script>
-}
-@if (Model.CanNext) {
-    <script>
-    $('#NextLinkDis').attr('hidden', 'hidden');
-    </script>
-} else {
-    <script>
-    $('#NextLink').attr('hidden', 'hidden');
-    </script>
-}
+<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
 
 <script>
-    function changePage(result) {
-        $('#iFrame').attr('src', result.url);
-        if (result.canPrevious) {
-            $('#PreviousLinkDis').attr('hidden', 'hidden');
-            $('#PreviousLink').removeAttr('hidden');
-            $('#PreviousLink').attr('href', '/ReadBook/ChangePage?bookId=' + result.bookId + '&spineIndex=' + (result.spineIndex - 1));
-        } else {
-            $('#PreviousLinkDis').removeAttr('hidden');
-            $('#PreviousLink').attr('hidden', 'hidden');
-        }
-        if (result.canNext) {
-            $('#NextLinkDis').attr('hidden', 'hidden');
-            $('#NextLink').removeAttr('hidden');
-            $('#NextLink').attr('href', '/ReadBook/ChangePage?bookId=' + result.bookId + '&spineIndex=' + (result.spineIndex + 1));
-        } else {
-            $('#NextLinkDis').removeAttr('hidden');
-            $('#NextLink').attr('hidden', 'hidden');
-        }
-    }
+    var spineRefs = [ @Html.Raw(string.Join(",", Model.SpineRefs.Select(r => "'" + r + "'")))];
+    var basePageUrl = location.protocol + '//' + location.host + '/ReadBook/ReadContent/' + @Model.BookId + '/';
 </script>
+
+<p>
+@for (int i = 0; i < Model.SpineRefs.Length; i++) { 
+    <a class="pagejump" onclick="jumpToPage('@Model.SpineRefs[i]')" id='pagejump_@i'>@(i + 1)</a>
+}
+</p>
 
 <script>
     function jumpToPage(url) {
         $('#iFrame').attr('src', 'ReadBook/ReadContent/' + @Model.BookId + '/' + url);
+    }
+
+    function onNewPageLoaded(url) {
+        var selurl = url.substring(basePageUrl.length);
+        $(".pagejump").removeClass("selpagejump");
+        for (var i = 0; i < spineRefs.length; i++) {
+            if (selurl == spineRefs[i]) $("#pagejump_" + i).addClass("selpagejump");
+        }
     }
 </script>
 
@@ -76,7 +44,7 @@
             </ul>
         </td>
         <td>
-            <iframe id="iFrame" style="width:100%;height:100%" src="@Model.Url"></iframe>
+            <iframe id="iFrame" style="width:100%;height:100%" src="@Model.Url" onLoad="onNewPageLoaded(this.contentWindow.location.href);"></iframe>
         </td>
     </tr>
 </table>

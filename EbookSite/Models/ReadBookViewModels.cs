@@ -5,11 +5,7 @@ using System.Web;
 
 namespace EbookSite.Models {
     public class ReadBookViewModel {
-        public bool CanPrevious { get; set; }
-
-        public bool CanNext { get; set; }
-
-        public int SpineIndex { get; set; }
+        public string[] SpineRefs;
 
         public string Title { get; set; }
 

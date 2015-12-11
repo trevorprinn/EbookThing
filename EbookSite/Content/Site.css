@@ -44,6 +44,17 @@ textarea {
     cursor: pointer
 }
 
+.pagejump {
+    cursor: pointer
+}
+
+.selpagejump {
+    pointer-events: none;
+    cursor: default;
+    color: gray;
+    border: solid
+}
+
 .toc-holder {
     width: 300px;
     height: 100%;
