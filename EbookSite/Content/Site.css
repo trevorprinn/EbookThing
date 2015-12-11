@@ -55,6 +55,12 @@ textarea {
     border: solid
 }
 
+.pagejumpdis {
+    pointer-events: none;
+    cursor: default;
+    color: gray;
+}
+
 .toc-holder {
     width: 300px;
     height: 100%;

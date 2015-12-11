@@ -14,22 +14,32 @@
 </script>
 
 <p>
+<a class="pagejump" id="pageprev" onclick="jumpToPage(spineRefs[currSpineRefIx-1])">@Html.Raw("<<")</a>
 @for (int i = 0; i < Model.SpineRefs.Length; i++) { 
     <a class="pagejump" onclick="jumpToPage('@Model.SpineRefs[i]')" id='pagejump_@i'>@(i + 1)</a>
 }
+<a class="pagejump" id="pagenext" onclick="jumpToPage(spineRefs[currSpineRefIx+1])">@Html.Raw(">>")</a>
 </p>
 
 <script>
+    var currSpineRefIx;
+
     function jumpToPage(url) {
         $('#iFrame').attr('src', 'ReadBook/ReadContent/' + @Model.BookId + '/' + url);
     }
 
     function onNewPageLoaded(url) {
         var selurl = url.substring(basePageUrl.length);
-        $(".pagejump").removeClass("selpagejump");
+        $(".pagejump").removeClass("selpagejump pagejumpdis");
         for (var i = 0; i < spineRefs.length; i++) {
-            if (selurl == spineRefs[i]) $("#pagejump_" + i).addClass("selpagejump");
+            if (selurl == spineRefs[i]) {
+                $("#pagejump_" + i).addClass("selpagejump");
+                currSpineRefIx = i;
+                break;
+            }
         }
+        if (currSpineRefIx <= 0) $("#pageprev").addClass("pagejumpdis");
+        if (currSpineRefIx >= spineRefs.length - 1) $("#pagenext").addClass("pagejumpdis");
     }
 </script>
 
