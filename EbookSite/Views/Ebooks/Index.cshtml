@@ -45,21 +45,21 @@
             <th></th>
         </tr>
     </thead>
-
-@foreach (var item in Model.Books) {
-    <tr>
-        <td>@Html.DisplayFor(m => item.Author)</td>
-        <td>@Html.DisplayFor(m => item.Title)</td>
-        <td><a href='@Url.Action("Cover", new { bookId = item.BookId })'><img src='@Url.Action("ShowThumbnail", "BookImage", new { bookId = item.BookId })' /></a></td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
-            @Html.ActionLink("Read", "Index", "ReadBook", new { bookId = item.BookId }, null) |
-            @Html.ActionLink("Download", "Download", new { bookId = item.BookId }) |
-            <a href='javascript:void();' onclick='showConfirmDlg("@item.Title", "/Ebooks/Delete?bookId=@item.BookId")'>Delete</a>
-        </td>
-    </tr>
-}
-
+    <tbody>
+        @foreach (var item in Model.Books) {
+            <tr>
+                <td>@Html.DisplayFor(m => item.Author)</td>
+                <td>@Html.DisplayFor(m => item.Title)</td>
+                <td><a href='@Url.Action("Cover", new { bookId = item.BookId })'><img src='@Url.Action("ShowThumbnail", "BookImage", new { bookId = item.BookId })' /></a></td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
+                    @Html.ActionLink("Read", "Index", "ReadBook", new { bookId = item.BookId }, null) |
+                    @Html.ActionLink("Download", "Download", new { bookId = item.BookId }) |
+                    <a href='javascript:void();' onclick='showConfirmDlg("@item.Title", "/Ebooks/Delete?bookId=@item.BookId")'>Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
 <script>
     $(document).ready(function () {

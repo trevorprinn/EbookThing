@@ -6,33 +6,52 @@
 
 <h2>@ViewBag.Title</h2>
 
+@Styles.Render("~/Content/datatables")
+@Scripts.Render("~/bundles/datatables")
+
 <form action="/Gutenberg/Index" method="get">
     @Html.DisplayNameFor(model => model.Filter)
     @Html.TextBoxFor(model => model.Filter)
     <input type="submit" name="submit" value="Apply Filter" />
 </form>
 
-<table class="table">
-    <tr>
-        <th>Author</th>
-        <th>Title</th>
-    </tr>
-
-@foreach (var item in Model.Books) {
-    <tr>
-        <td>@Html.DisplayFor(m => item.Author)</td>
-        <td>@Html.DisplayFor(m => item.Title)</td>
-        <td><a href='@Url.Action("Cover", new { bookId = item.Id })'><img src='@Url.Action("ShowGutThumbnail", "BookImage", new { bookId = item.Id })' /></a></td>
-        <td>
-            @if (item.HasImagesEpub) {
-                @Html.ActionLink("Import (Images)", "Download", new { gutBookId = item.Id, images = true });
-                @: |
+<table class="table" id="books">
+    <thead>
+        <tr>
+            <th>Author</th>
+            <th>Title</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Books) {
+            <tr>
+                <td>@Html.DisplayFor(m => item.Author)</td>
+                <td>@Html.DisplayFor(m => item.Title)</td>
+                <td><a href='@Url.Action("Cover", new { bookId = item.Id })'><img src='@Url.Action("ShowGutThumbnail", "BookImage", new { bookId = item.Id })' /></a></td>
+                <td>
+                    @if (item.HasImagesEpub) {
+                        @Html.ActionLink("Import (Images)", "Download", new { gutBookId = item.Id, images = true });
+                        @: |
             }
-            @if (item.HasNoImagesEpub) {
-                @Html.ActionLink("Import (No Images)", "Download", new { gutBookId = item.Id, images = false });
-            }
-        </td>
-    </tr>
-}
-
+                    @if (item.HasNoImagesEpub) {
+                        @Html.ActionLink("Import (No Images)", "Download", new { gutBookId = item.Id, images = false });
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+<script>
+    $(document).ready(function () {
+        $('#books').dataTable({
+            "columnDefs": [
+                { "orderable": false, "searchable": false, "targets": [2, 3] }
+            ],
+            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]
+        });
+    });
+</script>
+

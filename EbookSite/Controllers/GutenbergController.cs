@@ -19,7 +19,7 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 string usefilter = filter.ToLower();
                 var books = db.GutBooks.Where(b => b.Title.ToLower().Contains(usefilter) || (b.GutAuthor != null && b.GutAuthor.Name.Contains(usefilter)))
-                    .Take(50).OrderBy(b => b.Title).ThenBy(b => b.GutAuthor == null ? null : b.GutAuthor.Name);
+                    .Take(200).OrderBy(b => b.Title).ThenBy(b => b.GutAuthor == null ? null : b.GutAuthor.Name);
                 var vm = new GutenbergViewModel(books, filter);
                 return View(vm);
             }
