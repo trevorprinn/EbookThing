@@ -49,7 +49,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Description, new { @class = "form-control nomaxwidth" })
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control nomaxwidth", style = "width:100%" })
                 @Html.ValidationMessageFor(model => model.Description, "", new {  @class = "text-danger"})
             </div>
         </div>
@@ -63,6 +63,8 @@
 }
 
 <script>
+    // Set the height of the textarea before converting it to an html editor
+    $('#Description').height('150px');
     // Use a custom toolbar because bootstrap messes up the button heights for the header style buttons
     $('#Description').htmlarea({
         toolbar: [
@@ -74,7 +76,13 @@
             ["p"],
             ["cut", "copy", "paste"]
         ]
-    })
+    });
+
+    // Set the widths of the items that make up the editor so that it resizes correctly
+    $('div.jHtmlArea').width('98%');
+    $('div.jHtmlArea div').width('100%');
+    $('div.jHtmlArea div iframe').width('100%');
+    
 </script>
 
 
