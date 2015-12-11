@@ -25,7 +25,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Title, 3, 200, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextAreaFor(model => model.Title, new { @class = "form-control nomaxwidth" })
                 @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -33,7 +33,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Author, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.ComboBoxFor(model => model.Author, Model.Authors, prependNewValue: "~")
+                @Html.ComboBoxFor(model => model.Author, Model.Authors, new { @class = "form-control nomaxwidth" }, prependNewValue: "~")
                 @Html.ValidationMessageFor(model => model.Author, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -41,7 +41,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Publisher, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.ComboBoxFor(model => model.Publisher, Model.Publishers, prependNewValue: "~")
+                @Html.ComboBoxFor(model => model.Publisher, Model.Publishers, new { @class = "form-control nomaxwidth" }, prependNewValue: "~")
                 @Html.ValidationMessageFor(model => model.Publisher, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -49,7 +49,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Description, 10, 300, new { style = "max-width: 100%" })
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control nomaxwidth" })
                 @Html.ValidationMessageFor(model => model.Description, "", new {  @class = "text-danger"})
             </div>
         </div>

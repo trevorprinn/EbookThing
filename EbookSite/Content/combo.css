@@ -1,6 +1,6 @@
 .custom-combobox {
     position: relative;
-    display: inline-block;
+    display: block;
 }
 .custom-combobox-toggle {
     position: absolute;
@@ -12,4 +12,6 @@
 .custom-combobox-input {
     margin: 0;
     padding: 5px 10px;
+    width: 90%;
+    max-width: none;
 }
