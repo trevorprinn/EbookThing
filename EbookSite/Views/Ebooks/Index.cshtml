@@ -36,11 +36,18 @@
     }
 </script>
 
+<p>Toggle Visibility - 
+    <a class="toggle-vis" role="button" data-column="0">Author</a> |
+    <a class="toggle-vis" role="button" data-column="1">Title</a> |
+    <a class="toggle-vis" role="button" data-column="2">Tags</a> |
+    <a class="toggle-vis" role="button" data-column="3">Cover</a>
+</p>
 <table class="table" id="books">
     <thead>
         <tr>
             <th>Author</th>
             <th>Title</th>
+            <th>Tags</th>
             <th></th>
             <th></th>
         </tr>
@@ -50,6 +57,7 @@
             <tr>
                 <td>@Html.DisplayFor(m => item.Author)</td>
                 <td>@Html.DisplayFor(m => item.Title)</td>
+                <td>@Html.DisplayFor(m => item.Tags)</td>
                 <td><a href='@Url.Action("Cover", new { bookId = item.BookId })'><img src='@Url.Action("ShowThumbnail", "BookImage", new { bookId = item.BookId })' /></a></td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
@@ -62,12 +70,24 @@
     </tbody>
 </table>
 <script>
+    var colAuthor = 0;
+    var colTitle = 1;
+    var colTags = 2;
+    var colCover = 3;
+    var colButtons = 4;
     $(document).ready(function () {
-        $('#books').dataTable({
+        var table = $('#books').DataTable({
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [2, 3] }
+                { "orderable": false, "searchable": false, "targets": [colCover, colButtons] },
+                { "orderable": false, "targets": [colTags] }
             ],
             "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]
+        });
+
+        $('a.toggle-vis').on('click', function(e) {
+            e.preventDefault();
+            var column = table.column($(this).attr('data-column'));
+            column.visible(!column.visible());
         });
     });
 </script>

@@ -14,10 +14,12 @@ namespace EbookSite.Models {
             public int BookId { get; }
             public string Title { get; }
             public string Author { get; }
+            public string Tags { get; }
             public DisplayBook(EbookObjects.Models.Book book) {
                 BookId = book.BookId;
                 Title = book.Title;
                 Author = book.Author?.Name;
+                Tags = string.Join(", ", book.Tags.Select(t => t.Item));
             }
         }
 
