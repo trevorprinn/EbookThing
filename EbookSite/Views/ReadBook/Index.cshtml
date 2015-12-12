@@ -43,20 +43,44 @@
     }
 </script>
 
+<script>
+    var tocVisible = true;
+    function tocToggle() {
+        if (tocVisible) {
+            $("#coltoc").addClass("toc-hidden");
+            $("#colview").addClass("readerfullwidth");
+            $("#tocbutton").text("Show TOC");
+        } else {
+            $("#coltoc").removeClass("toc-hidden");
+            $("#colview").removeClass("readerfullwidth");
+            $("#tocbutton").text("Hide TOC");
+        };
+        tocVisible = !tocVisible;
+    }
+</script>
+
+<a role="button" id="tocbutton" onclick="tocToggle();">Hide TOC</a>
+
 <table id="reader">
-    <tr style="height:100%">
-        <td style="width:30%">
-            <h3 id="toctitle">@Model.Toc.Title</h3>
-            <ul id="toclist" class="toc-list clearfix">
-                @foreach (var np in Model.Toc.NavPoints) {
-                    <li><a class="toc-item" onclick="jumpToPage('@np.Ref')">@np.Text</a></li>
-                }
-            </ul>
-        </td>
-        <td>
-            <iframe id="iFrame" style="width:100%;height:100%" src="@Model.Url" onLoad="onNewPageLoaded(this.contentWindow.location.href);"></iframe>
-        </td>
-    </tr>
+    <colgroup>
+        <col id="coltoc" class="toc"/>
+        <col id="colview" />
+    </colgroup>
+    <tbody>
+        <tr style="height:100%">
+            <td id="toccell">
+                <h3 id="toctitle">@Model.Toc.Title</h3>
+                <ul id="toclist" class="toc-list clearfix">
+                    @foreach (var np in Model.Toc.NavPoints) {
+                        <li><a class="toc-item" onclick="jumpToPage('@np.Ref')">@np.Text</a></li>
+                    }
+                </ul>
+            </td>
+            <td>
+                <iframe id="iFrame" style="width:100%;height:100%" src="@Model.Url" onLoad="onNewPageLoaded(this.contentWindow.location.href);"></iframe>
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 <p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>

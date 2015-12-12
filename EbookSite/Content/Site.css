@@ -31,6 +31,10 @@ textarea {
     flex-grow: 1
 }
 
+.toc {
+    width: 30%;
+}
+
 .toc-list {
     overflow: auto;
     display: inline-block;
@@ -42,6 +46,15 @@ textarea {
 
 .toc-item {
     cursor: pointer
+}
+
+.toc-hidden {
+    visibility: collapse;
+    width: 0%;
+}
+
+.readerfullwidth {
+    width: 100%;
 }
 
 .pagejump {
