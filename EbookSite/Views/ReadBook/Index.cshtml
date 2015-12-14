@@ -29,7 +29,8 @@
     }
 
     function onNewPageLoaded(url) {
-        var selurl = url.substring(basePageUrl.length);
+        var selurl = url.split('#')[0];
+        selurl = decodeURIComponent(selurl.substring(basePageUrl.length));
         $(".pagejump").removeClass("selpagejump pagejumpdis");
         for (var i = 0; i < spineRefs.length; i++) {
             if (selurl == spineRefs[i]) {
