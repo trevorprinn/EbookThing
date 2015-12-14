@@ -74,6 +74,10 @@ textarea {
     color: gray;
 }
 
+.pagejumphide {
+    display: none;
+}
+
 .toc-holder {
     width: 300px;
     height: 100%;

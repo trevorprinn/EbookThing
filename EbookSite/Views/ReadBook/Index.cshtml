@@ -15,9 +15,11 @@
 
 <p>
 <a class="pagejump" id="pageprev" onclick="jumpToPage(spineRefs[currSpineRefIx-1])">@Html.Raw("<<")</a>
+<span id="pageprevdots">...</span>
 @for (int i = 0; i < Model.SpineRefs.Length; i++) { 
     <a class="pagejump" onclick="jumpToPage('@Model.SpineRefs[i]')" id='pagejump_@i'>@(i + 1)</a>
 }
+<span id="pagenextdots">...</span>
 <a class="pagejump" id="pagenext" onclick="jumpToPage(spineRefs[currSpineRefIx+1])">@Html.Raw(">>")</a>
 </p>
 
@@ -39,6 +41,28 @@
                 break;
             }
         }
+        var firstRef = currSpineRefIx - 2;
+        if (firstRef < 0) firstRef = 0;
+        var lastRef = firstRef + 4;
+        if (lastRef > spineRefs.length - 1) lastRef = spineRefs.length - 1;
+        if (lastRef < firstRef) lastRef = firstRef;
+        $(".pagejump").addClass("pagejumphide");
+        $("#pageprev").removeClass("pagejumphide");
+        $("#pagenext").removeClass("pagejumphide");
+        for (var i = firstRef; i <= lastRef; i++) {
+            $("#pagejump_" + i).removeClass("pagejumphide");
+        }
+        if (firstRef == 0) {
+            $("#pageprevdots").addClass("pagejumphide");
+        } else {
+            $("#pageprevdots").removeClass("pagejumphide");
+        }
+        if (lastRef == spineRefs.length - 1) {
+            $("#pagenextdots").addClass("pagejumphide");
+        } else {
+            $("#pagenextdots").removeClass("pagejumphide");
+        }
+
         if (currSpineRefIx <= 0) $("#pageprev").addClass("pagejumpdis");
         if (currSpineRefIx >= spineRefs.length - 1) $("#pagenext").addClass("pagejumpdis");
     }
