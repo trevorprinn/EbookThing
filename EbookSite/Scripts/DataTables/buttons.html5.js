@@ -6,8 +6,38 @@
  * Copyright © 2015 Eli Grey - http://eligrey.com
  */
 
-(function($, DataTable) {
-"use strict";
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net', 'datatables.net-buttons'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			if ( ! $.fn.dataTable.Buttons ) {
+				require('datatables.net-buttons')(root, $);
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -247,24 +277,41 @@ var _saveAs = (function(view) {
  */
 
 /**
- * Get the title / file name for an exported file.
+ * Get the file name for an exported file.
  *
  * @param {object}  config       Button configuration
  * @param {boolean} incExtension Include the file name extension
  */
 var _filename = function ( config, incExtension )
 {
-	var title = config.title;
+	// Backwards compatibility
+	var filename = config.filename === '*' && config.title !== '*' && config.title !== undefined ?
+		config.title :
+		config.filename;
 
-	if ( title.indexOf( '*' ) !== -1 ) {
-		title = title.replace( '*', $('title').text() );
+	if ( filename.indexOf( '*' ) !== -1 ) {
+		filename = filename.replace( '*', $('title').text() );
 	}
 
 	// Strip characters which the OS will object to
-	title = title.replace(/[^a-zA-Z0-9_\u00A1-\uFFFF\.,\-_ !\(\)]/g, "");
+	filename = filename.replace(/[^a-zA-Z0-9_\u00A1-\uFFFF\.,\-_ !\(\)]/g, "");
 
 	return incExtension === undefined || incExtension === true ?
-		title+config.extension :
+		filename+config.extension :
+		filename;
+};
+
+/**
+ * Get the title for an exported file.
+ *
+ * @param {object}  config  Button configuration
+ */
+var _title = function ( config )
+{
+	var title = config.title;
+
+	return title.indexOf( '*' ) !== -1 ?
+		title.replace( '*', $('title').text() ) :
 		title;
 };
 
@@ -295,10 +342,14 @@ var _exportData = function ( dt, config )
 {
 	var newLine = _newLine( config );
 	var data = dt.buttons.exportData( config.exportOptions );
+	var boundary = config.fieldBoundary;
+	var separator = config.fieldSeparator;
+	var reBoundary = new RegExp( boundary, 'g' );
+	var escapeChar = config.escapeChar !== undefined ?
+		config.escapeChar :
+		'\\';
 	var join = function ( a ) {
 		var s = '';
-		var boundary = config.fieldBoundary;
-		var separator = config.fieldSeparator;
 
 		// If there is a field boundary, then we might need to escape it in
 		// the source data
@@ -308,7 +359,7 @@ var _exportData = function ( dt, config )
 			}
 
 			s += boundary ?
-				boundary + a[i].replace( boundary, '\\'+boundary ) + boundary :
+				boundary + ('' + a[i]).replace( reBoundary, escapeChar+boundary ) + boundary :
 				a[i];
 		}
 
@@ -402,34 +453,58 @@ DataTable.ext.buttons.copyHtml5 = {
 	},
 
 	action: function ( e, dt, button, config ) {
-		// This button is slightly sneaky as there is no HTML API to copy text
-		// to a clipboard, so what it does is use the buttons information
-		// element with an also completely hidden textarea that contains the
-		// data to be copied. That is pre-selected so the user just needs to
-		// activate their system clipboard.
-		var newLine = _newLine( config );
-		var output = _exportData( dt, config ).str;
+		var exportData = _exportData( dt, config );
+		var output = exportData.str;
+		var hiddenDiv = $('<div/>')
+			.css( {
+				height: 1,
+				width: 1,
+				overflow: 'hidden',
+				position: 'fixed',
+				top: 0,
+				left: 0
+			} );
+		var textarea = $('<textarea readonly/>')
+			.val( output )
+			.appendTo( hiddenDiv );
+
+		// For browsers that support the copy execCommand, try to use it
+		if ( document.queryCommandSupported('copy') ) {
+			hiddenDiv.appendTo( 'body' );
+			textarea[0].focus();
+			textarea[0].select();
+
+			try {
+				document.execCommand( 'copy' );
+				hiddenDiv.remove();
+
+				dt.buttons.info(
+					dt.i18n( 'buttons.copyTitle', 'Copy to clipboard' ),
+					dt.i18n( 'buttons.copySuccess', {
+							1: "Copied one row to clipboard",
+							_: "Copied %d rows to clipboard"
+						}, exportData.rows ),
+					2000
+				);
+
+				return;
+			}
+			catch (t) {}
+		}
+
+		// Otherwise we show the text box and instruct the user to use it
 		var message = $('<span>'+dt.i18n( 'buttons.copyKeys',
 				'Press <i>ctrl</i> or <i>\u2318</i> + <i>C</i> to copy the table data<br>to your system clipboard.<br><br>'+
 				'To cancel, click this message or press escape.' )+'</span>'
 			)
-			.append( $('<div/>')
-				.css( {
-					height: 1,
-					width: 1,
-					overflow: 'hidden'
-				} )
-				.append(
-					$('<textarea readonly/>').val( output )
-				)
-		);
+			.append( hiddenDiv );
 
 		dt.buttons.info( dt.i18n( 'buttons.copyTitle', 'Copy to clipboard' ), message, 0 );
 
 		// Select the text so when the user activates their system clipboard
 		// it will copy that text
-		message.find('textarea')[0].focus();
-		message.find('textarea')[0].select();
+		textarea[0].focus();
+		textarea[0].select();
 
 		// Event to hide the message when the user is done
 		var container = $(message).closest('.dt-button-info');
@@ -480,14 +555,28 @@ DataTable.ext.buttons.csvHtml5 = {
 		// Set the text
 		var newLine = _newLine( config );
 		var output = _exportData( dt, config ).str;
+		var charset = config.charset;
+
+		if ( charset !== false ) {
+			if ( ! charset ) {
+				charset = document.characterSet || document.charset;
+			}
+
+			if ( charset ) {
+				charset = ';charset='+charset;
+			}
+		}
+		else {
+			charset = '';
+		}
 
 		_saveAs(
-			new Blob( [output], {type : 'text/csv'} ),
+			new Blob( [output], {type: 'text/csv'+charset} ),
 			_filename( config )
 		);
 	},
 
-	title: '*',
+	filename: '*',
 
 	extension: '.csv',
 
@@ -496,6 +585,10 @@ DataTable.ext.buttons.csvHtml5 = {
 	fieldSeparator: ',',
 
 	fieldBoundary: '"',
+
+	escapeChar: '"',
+
+	charset: null,
 
 	header: true,
 
@@ -524,11 +617,21 @@ DataTable.ext.buttons.excelHtml5 = {
 			var cells = [];
 
 			for ( var i=0, ien=row.length ; i<ien ; i++ ) {
-				cells.push( $.isNumeric( row[i] ) ?
+				if ( row[i] === null || row[i] === undefined ) {
+					row[i] = '';
+				}
+
+				// Don't match numbers with leading zeros or a negative anywhere
+				// but the start
+				cells.push( typeof row[i] === 'number' || (row[i].match && row[i].match(/^-?[0-9\.]+$/) && row[i].charAt(0) !== '0') ?
 					'<c t="n"><v>'+row[i]+'</v></c>' :
-					'<c t="inlineStr"><is><t>'+
-						row[i].replace(/&(?!amp;)/g, '&amp;')+
-					'</t></is></c>'
+					'<c t="inlineStr"><is><t>'+(
+						! row[i].replace ?
+							row[i] :
+							row[i]
+								.replace(/&(?!amp;)/g, '&amp;')
+								.replace(/[\x00-\x1F\x7F-\x9F]/g, ''))+ // remove control characters
+					'</t></is></c>'                                    // they are not valid in XML
 				);
 			}
 
@@ -565,7 +668,7 @@ DataTable.ext.buttons.excelHtml5 = {
 		);
 	},
 
-	title: '*',
+	filename: '*',
 
 	extension: '.xlsx',
 
@@ -598,7 +701,7 @@ DataTable.ext.buttons.pdfHtml5 = {
 		if ( config.header ) {
 			rows.push( $.map( data.header, function ( d ) {
 				return {
-					text: d,
+					text: typeof d === 'string' ? d : d+'',
 					style: 'tableHeader'
 				};
 			} ) );
@@ -607,7 +710,7 @@ DataTable.ext.buttons.pdfHtml5 = {
 		for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
 			rows.push( $.map( data.body[i], function ( d ) {
 				return {
-					text: d,
+					text: typeof d === 'string' ? d : d+'',
 					style: i % 2 ? 'tableBodyEven' : 'tableBodyOdd'
 				};
 			} ) );
@@ -616,7 +719,7 @@ DataTable.ext.buttons.pdfHtml5 = {
 		if ( config.footer ) {
 			rows.push( $.map( data.footer, function ( d ) {
 				return {
-					text: d,
+					text: typeof d === 'string' ? d : d+'',
 					style: 'tableFooter'
 				};
 			} ) );
@@ -673,7 +776,7 @@ DataTable.ext.buttons.pdfHtml5 = {
 
 		if ( config.title ) {
 			doc.content.unshift( {
-				text: _filename( config, false ),
+				text: _title( config, false ),
 				style: 'title',
 				margin: [ 0, 0, 0, 12 ]
 			} );
@@ -699,6 +802,8 @@ DataTable.ext.buttons.pdfHtml5 = {
 
 	title: '*',
 
+	filename: '*',
+
 	extension: '.pdf',
 
 	exportOptions: {},
@@ -719,4 +824,5 @@ DataTable.ext.buttons.pdfHtml5 = {
 };
 
 
-})(jQuery, jQuery.fn.dataTable);
+return DataTable.Buttons;
+}));

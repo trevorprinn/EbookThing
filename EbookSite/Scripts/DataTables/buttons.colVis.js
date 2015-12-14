@@ -3,8 +3,38 @@
  * 2015 SpryMedia Ltd - datatables.net/license
  */
 
-(function($, DataTable) {
-"use strict";
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net', 'datatables.net-buttons'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			if ( ! $.fn.dataTable.Buttons ) {
+				require('datatables.net-buttons')(root, $);
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
 
 
 $.extend( DataTable.ext.buttons, {
@@ -58,17 +88,18 @@ $.extend( DataTable.ext.buttons, {
 
 	// Single button to set column visibility
 	columnVisibility: {
-		columns: null, // column selector
+		columns: undefined, // column selector
 		text: function ( dt, button, conf ) {
 			return conf._columnText( dt, conf.columns );
 		},
 		className: 'buttons-columnVisibility',
 		action: function ( e, dt, button, conf ) {
-			var col = dt.column( conf.columns );
+			var col = dt.columns( conf.columns );
+			var curr = col.visible();
 
 			col.visible( conf.visibility !== undefined ?
 				conf.visibility :
-				! col.visible()
+				! (curr.length ? curr[0] : false )
 			);
 		},
 		init: function ( dt, button, conf ) {
@@ -82,9 +113,19 @@ $.extend( DataTable.ext.buttons, {
 					}
 				} )
 				.on( 'column-reorder.dt'+conf.namespace, function (e, settings, details) {
+					// Don't rename buttons based on column name if the button
+					// controls more than one column!
+					if ( dt.columns( conf.columns ).count() !== 1 ) {
+						return;
+					}
+
+					if ( typeof conf.columns === 'number' ) {
+						conf.columns = details.mapping[ conf.columns ];
+					}
+
 					var col = dt.column( conf.columns );
 
-					button.text( conf._columnText( dt, conf.columns ) );
+					that.text( conf._columnText( dt, conf.columns ) );
 					that.active( col.visible() );
 				} );
 
@@ -125,7 +166,13 @@ $.extend( DataTable.ext.buttons, {
 
 		action: function ( e, dt, button, conf ) {
 			dt.columns().every( function ( i ) {
-				this.visible( conf._visOriginal[ i ] );
+				// Take into account that ColReorder might have disrupted our
+				// indexes
+				var idx = dt.colReorder && dt.colReorder.transpose ?
+					dt.colReorder.transpose( i, 'toOriginal' ) :
+					i;
+
+				this.visible( conf._visOriginal[ idx ] );
 			} );
 		}
 	},
@@ -146,4 +193,5 @@ $.extend( DataTable.ext.buttons, {
 } );
 
 
-})(jQuery, jQuery.fn.dataTable);
+return DataTable.Buttons;
+}));

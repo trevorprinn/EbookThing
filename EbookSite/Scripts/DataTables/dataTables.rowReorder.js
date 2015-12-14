@@ -1,11 +1,11 @@
-/*! RowReorder 1.0.0
+/*! RowReorder 1.1.0
  * 2015 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     RowReorder
  * @description Row reordering extension for DataTables
- * @version     1.0.0
+ * @version     1.1.0
  * @file        dataTables.rowReorder.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -21,11 +21,35 @@
  * For details please refer to: http://www.datatables.net
  */
 
-(function(window, document, undefined) {
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
 
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
 
-var factory = function( $, DataTable ) {
-"use strict";
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
 
 /**
  * RowReorder provides the ability in DataTables to click and drag rows to
@@ -109,7 +133,7 @@ var RowReorder = function ( dt, opts ) {
 };
 
 
-RowReorder.prototype = {
+$.extend( RowReorder.prototype, {
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Constructor
 	 */
@@ -133,8 +157,10 @@ RowReorder.prototype = {
 		// listen for mouse down on the target column - we have to implement
 		// this rather than using HTML5 drag and drop as drag and drop doesn't
 		// appear to work on table rows at this time. Also mobile browsers are
-		// not supported
-		$( table ).on( 'mousedown.rowReorder touchstart.rowReorder', this.c.selector, function (e) {
+		// not supported.
+		// Use `table().container()` rather than just the table node for IE8 -
+		// otherwise it only works once...
+		$(dt.table().container()).on( 'mousedown.rowReorder touchstart.rowReorder', this.c.selector, function (e) {
 			var tr = $(this).closest('tr');
 
 			// Double check that it is a DataTable row
@@ -144,8 +170,9 @@ RowReorder.prototype = {
 			}
 		} );
 
-		dt.on( 'destroy', function () {
-			table.off( 'mousedown.rowReorder' );
+		dt.on( 'destroy.rowReorder', function () {
+			$(dt.table().container()).off( '.rowReorder' );
+			dt.off( '.rowReorder' );
 		} );
 	},
 
@@ -421,6 +448,7 @@ RowReorder.prototype = {
 	{
 		var dt = this.s.dt;
 		var i, ien;
+		var dataSrc = this.c.dataSrc;
 
 		this.dom.clone.remove();
 		this.dom.clone = null;
@@ -430,6 +458,9 @@ RowReorder.prototype = {
 
 		$(document).off( '.rowReorder' );
 		$(document.body).removeClass( 'dt-rowReorder-noOverflow' );
+
+		clearInterval( this.s.scrollInterval );
+		this.s.scrollInterval = null;
 
 		// Calculate the difference
 		var startNodes = this.s.start.nodes;
@@ -464,9 +495,10 @@ RowReorder.prototype = {
 		
 		// Emit event
 		this._emitEvent( 'row-reorder', [ fullDiff, {
-			dataSrc: this.c.dataSrc,
-			nodes:   diffNodes,
-			values:  idDiff
+			dataSrc:    dataSrc,
+			nodes:      diffNodes,
+			values:     idDiff,
+			triggerRow: dt.row( this.dom.target )
 		} ] );
 
 		// Editor interface
@@ -475,7 +507,7 @@ RowReorder.prototype = {
 				.edit( diffNodes, false, {
 					submit: 'changed'
 				} )
-				.multiSet( this.c.dataSrc, idDiff )
+				.multiSet( dataSrc, idDiff )
 				.submit();
 		}
 
@@ -487,13 +519,18 @@ RowReorder.prototype = {
 
 				setDataFn( rowData, fullDiff[i].newData );
 
-				row.invalidate( 'data' );
+				// Invalidate the cell that has the same data source as the dataSrc
+				dt.columns().every( function () {
+					if ( this.dataSrc() === dataSrc ) {
+						dt.cell( fullDiff[i].node, this.index() ).invalidate( 'data' );
+					}
+				} );
 			}
 
 			dt.draw( false );
 		}
 	}
-};
+} );
 
 
 
@@ -552,7 +589,7 @@ RowReorder.defaults = {
  * @name RowReorder.version
  * @static
  */
-RowReorder.version = '1.0.0';
+RowReorder.version = '1.1.0';
 
 
 $.fn.dataTable.RowReorder = RowReorder;
@@ -577,22 +614,6 @@ $(document).on( 'init.dt.dtr', function (e, settings, json) {
 	}
 } );
 
+
 return RowReorder;
-}; // /factory
-
-
-// Define as an AMD module if possible
-if ( typeof define === 'function' && define.amd ) {
-	define( ['jquery', 'datatables'], factory );
-}
-else if ( typeof exports === 'object' ) {
-    // Node/CommonJS
-    factory( require('jquery'), require('datatables') );
-}
-else if ( jQuery && !jQuery.fn.dataTable.RowReorder ) {
-	// Otherwise simply initialise as normal, stopping multiple evaluation
-	factory( jQuery, jQuery.fn.dataTable );
-}
-
-
-})(window, document);
+}));
