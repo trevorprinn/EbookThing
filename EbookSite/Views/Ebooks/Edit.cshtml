@@ -13,6 +13,9 @@
 @Scripts.Render("~/bundles/combo")
 @Styles.Render("~/Content/combo")
 
+@Styles.Render("~/Content/tagger")
+@Scripts.Render("~/bundles/tagger")
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -55,11 +58,20 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.Tags, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.ListBoxFor(model => model.Tags, ViewBag.zzz as MultiSelectList)
+                
+            </div>
+        </div>
+
+        <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
     </div>
+
 }
 
 <script>
@@ -83,6 +95,23 @@
     $('div.jHtmlArea div').width('100%');
     $('div.jHtmlArea div iframe').width('100%');
     
+</script>
+
+<script>
+    var tags = @Html.Raw(Model.TagsInfo);
+    $(function () {
+        $("#Tags").tagger({
+            availableTags: tags,
+            baseURL: "/Content/tagger/",
+            displayHierarchy: false,
+            indentMultiplier: 2,
+            fieldWidth: null,
+            freeTextInput: true,
+            freeTextMessage: 'Add <em>%VALUE%</em> to list',
+            freeTextPrefix: ''
+        });
+        $(".tagger").width("96%");
+    });
 </script>
 
 

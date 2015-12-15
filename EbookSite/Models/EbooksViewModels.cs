@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using EbookObjects.Models;
 using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace EbookSite.Models {
 
@@ -45,6 +46,14 @@ namespace EbookSite.Models {
 
         public string Description { get; }
 
+        public List<Tag> Tags { get; }
+
+        public string[] SelectedTags { get; }
+
+        public string TagsInfo { get; }
+
+        public MultiSelectList TagList { get; }
+
         public BookViewModel(Book book, EbooksContext db) {
             BookId = book.BookId;
             Title = book.Title;
@@ -53,6 +62,21 @@ namespace EbookSite.Models {
             Publisher = book.Publisher?.PublisherId;
             Publishers = new SelectList(new Publisher[] { new Publisher() }.Concat(db.Publishers.Where(p => p.Books.Any(b => b.UserId == book.UserId))).ToArray(), "PublisherId", "Name", Publisher);
             Description = book.Description;
+            SelectedTags = book.Tags.Select(t => t.Item).ToArray();
+            Tags = book.Tags.ToList();
+            TagList = new MultiSelectList(db.Tags.ToArray(), "Item", "Item", SelectedTags);
+
+            var tagsInfo = new JObject();
+            foreach (var tag in db.Tags) {
+                var item = new JObject();
+                item["id"] = tag.Item;
+                item["selected"] = book.Tags.Contains(tag);
+                item["suggestable"] = true;
+                item["suggestion"] = tag.Item;
+                item["key"] = tag.Item;
+                tagsInfo.Add(tag.Item, item);
+            }
+            TagsInfo = tagsInfo.ToString();
         }
     }
 
@@ -78,6 +102,8 @@ namespace EbookSite.Models {
 
         [AllowHtml]
         public string Description { get; set; }
+
+        public string[] Tags { get; set; }
     }
 
     public class CoverViewModel {

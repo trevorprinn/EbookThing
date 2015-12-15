@@ -302,6 +302,10 @@
     <Content Include="Content\jHtmlArea\jHtmlArea.png" />
     <Content Include="Content\jHtmlArea\jHtmlArea_Toolbar_Group_BG.png" />
     <Content Include="Content\jHtmlArea\jHtmlArea_Toolbar_Group__Btn_Select_BG.png" />
+    <Content Include="Content\jquery.tagger.css" />
+    <Content Include="Content\tagger\dropdown.png" />
+    <Content Include="Content\tagger\remove.png" />
+    <Content Include="Content\tagger\search.png" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -417,6 +421,7 @@
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.tagger.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

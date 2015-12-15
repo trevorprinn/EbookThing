@@ -49,7 +49,10 @@ namespace EbookSite.Controllers
                 var user = db.GetEbooksUser(User);
                 var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
                 if (book == null) return Redirect(Request.UrlReferrer.ToString());
-                return View(new BookViewModel(book, db));
+                var model = new BookViewModel(book, db);
+                // ListBoxFor is broken, see https://social.msdn.microsoft.com/Forums/vstudio/en-US/05ee3b35-f3d3-48b4-83f5-ca3d9073624e/mvc-htmlhelper-listboxfor-and-listbox-multiselectlist-bug?forum=netfxbcl
+                ViewBag.Tags = model.TagList;
+                return View(model);
             }
         }
 
@@ -68,6 +71,7 @@ namespace EbookSite.Controllers
                 } else {
                     book.PublisherId = model.PublisherId != 0 ? model.PublisherId : null;
                 }
+                book.SetTags(db, model.Tags);
 
                 book.Description = model.Description;
                 db.SaveChanges();
