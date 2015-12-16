@@ -1,18 +1,26 @@
-<Query Kind="Program" />
+<Query Kind="Program">
+  <Reference>&lt;RuntimeDirectory&gt;\System.Net.dll</Reference>
+  <NuGetReference>SharpZipLib</NuGetReference>
+  <Namespace>ICSharpCode.SharpZipLib.Tar</Namespace>
+  <Namespace>ICSharpCode.SharpZipLib.Zip</Namespace>
+  <Namespace>System.Net</Namespace>
+</Query>
 
 /* LINQPad script to load the Gutenberg Catalogue into a single, much smaller, csv file
  * containing just the basic book data needed by the Ebooks site. This is intended to
  * be run away from the server, on a desktop machine, to avoid decompressing and processing
  * 700MB+ of data on the server.
  * 
- * To update the catalogue, download it from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip
- * Unzip the file and untar it to the desktop, then run this script. This will produce a Books.csv
- * with the minimal data from the catalogue, which can then be uploaded to the server and loaded into
+ * It downloads the catalogue from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip,
+ * unzips and untars the stream writing to Books.csv directly from the stream with the minimal data from the
+ * catalogue.
+ * Books.csv can then be uploaded to the server and loaded into
  * the database using a GutCatalogueLoader object.
  */
 void Main() {
 	var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-	var docs = GetDocs(Path.Combine(desktop, "rdf-files"))
+	
+	var docs = getRdfFiles() 
 		.Where(f => f.Id.NotIn(0, 999999) && f.Title != null)
 		// Don't include any that have no epubs (eg sound files)
 		.Where(f => f.EpubUrlImages != null || f.EpubUrlNoImages != null);
@@ -34,10 +42,19 @@ void Main() {
 	}
 }
 
-IEnumerable<GutCatDoc> GetDocs(string topfolder) {
-	foreach (var f in Directory.GetFiles(topfolder, "*.rdf", SearchOption.AllDirectories)) {
-		// Use yield so that only one at a time is loaded into memory.
-		yield return new GutCatDoc(f);
+IEnumerable<GutCatDoc> getRdfFiles() {
+	var req = (HttpWebRequest)WebRequest.Create("http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip");
+	using (var resp = (HttpWebResponse)req.GetResponse()) {
+		using (var zip = new ZipInputStream(resp.GetResponseStream())) {
+			zip.GetNextEntry();
+			using (var tar = new TarInputStream(zip)) {
+				TarEntry tarentry;
+				while ((tarentry = tar.GetNextEntry()) != null) {
+					if (tarentry.IsDirectory) continue;
+					yield return new GutCatDoc(tar);
+				}
+			}
+		}
 	}
 }
 
@@ -51,15 +68,19 @@ class GutCatDoc {
 	private static XNamespace _dcterms = "http://purl.org/dc/terms/";
 	private static XNamespace _rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	private static XNamespace _dcam = "http://purl.org/dc/dcam/";
-	
+
 	public GutCatDoc(string path) {
 		_doc = XDocument.Load(path);
 	}
-	
+
+	public GutCatDoc(Stream s) {
+		_doc = XDocument.Load(s);
+	}
+
 	private XElement top => _doc.Root.Element(_pgterms + "ebook");
-	
+
 	public int Id => Convert.ToInt32(top.Attribute(_rdf + "about").Value.Substring(7));
-	
+
 	public string Author => top.Element(_dcterms + "creator")?.Descendants(_pgterms + "name")?.FirstOrDefault()?.Value;
 	
 	public string Title => top.Element(_dcterms + "title")?.Value;
