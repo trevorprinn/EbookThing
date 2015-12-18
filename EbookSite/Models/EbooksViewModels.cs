@@ -28,6 +28,8 @@ namespace EbookSite.Models {
 
         public string Search { get; set; }
 
+        public string HiddenColumns { get; set; }
+
         public IEnumerable<Book> BookSet {
             set { Books = value.Select(b => new DisplayBook(b)).ToArray(); }
         }

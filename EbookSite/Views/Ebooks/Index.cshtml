@@ -100,8 +100,8 @@
     $(document).ready(function () {
         var table = $('#books').DataTable({
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [colCover, colButtons] },
-                { "orderable": false, "targets": [colTags] },
+                { "orderable": false, "searchable": false, "targets": [colTags, colCover, colButtons] },
+                { "visible": false, "targets": [ @Model.HiddenColumns ]}
             ],
             "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
             "search": {
@@ -111,8 +111,16 @@
 
         $('a.toggle-vis').on('click', function(e) {
             e.preventDefault();
-            var column = table.column($(this).attr('data-column'));
+            var colNbr = $(this).attr('data-column');
+            var column = table.column(colNbr);
             column.visible(!column.visible());
+            $.ajax("/Ebooks/SaveColVis", {
+                data: {
+                    "colNbr": colNbr,
+                    "visible": column.visible()
+                },
+                type: "POST"
+            });
         });
 
         table.on('search.dt', function () {

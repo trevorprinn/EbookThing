@@ -18,6 +18,7 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 var model = new DisplayBooksViewModel { BookSet = db.GetEbooksUser(User).Books };
                 model.Search = (string)Session["Search"];
+                model.HiddenColumns = Session["HiddenCols"] == null ? null : string.Join(", ", ((List<int>)Session["HiddenCols"]).Select(c => c.ToString()));
                 return View(model);
             }
         }
@@ -128,6 +129,19 @@ namespace EbookSite.Controllers
         [HttpPost]
         public ActionResult SaveSearch(string search) {
             Session["Search"] = search;
+            return null;
+        }
+
+        [HttpPost]
+        public ActionResult SaveColVis(int colNbr, bool visible) {
+            var hidden = (List<int>)Session["HiddenCols"];
+            if (hidden == null) hidden = new List<int>();
+            if (visible && hidden.Contains(colNbr)) {
+                hidden.Remove(colNbr);
+            } else if (!visible && !hidden.Contains(colNbr)) {
+                hidden.Add(colNbr);
+            }
+            Session["HiddenCols"] = hidden;
             return null;
         }
     }
