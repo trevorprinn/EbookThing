@@ -72,6 +72,7 @@ namespace EbookSite.Controllers
                     book.PublisherId = model.PublisherId != 0 ? model.PublisherId : null;
                 }
                 book.SetTags(db, model.Tags);
+                book.SetIdentifiers(db, model.BookIdents);
 
                 book.Description = model.Description;
                 db.SaveChanges();

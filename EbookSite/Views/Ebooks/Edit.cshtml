@@ -16,7 +16,10 @@
 @Styles.Render("~/Content/tagger")
 @Scripts.Render("~/bundles/tagger")
 
-@using (Html.BeginForm())
+@Styles.Render("~/Content/datatables")
+@Scripts.Render("~/bundles/datatables")
+
+@using (Html.BeginForm("Edit", "Ebooks", FormMethod.Post, new { onsubmit = "return beforeSubmit();" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.BookId)
@@ -53,7 +56,7 @@
             @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.TextAreaFor(model => model.Description, new { @class = "form-control nomaxwidth", style = "width:100%" })
-                @Html.ValidationMessageFor(model => model.Description, "", new {  @class = "text-danger"})
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -61,7 +64,32 @@
             @Html.LabelFor(model => model.Tags, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.ListBoxFor(model => model.Tags, ViewBag.zzz as MultiSelectList)
-                
+                @Html.ValidationMessageFor(model => model.Tags, "", new { @class ="text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookIdents, "Identifiers", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <table class="table" id="idents">
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Value</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var bi in Model.BookIdents.Keys) { 
+                            <tr>
+                                <td>@Html.TextBoxFor(m => bi, htmlAttributes: new { @class="form-control nomaxwidth" })</td>
+                                <td>@Html.TextBoxFor(m => m.BookIdents[bi], htmlAttributes: new { @class = "form-control nomaxwidth" })</td>
+                                <td><a role="button">Delete</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <a role="button" onclick="addIdent();">Add New Identifier</a>
             </div>
         </div>
 
@@ -112,6 +140,45 @@
         });
         $(".tagger").width("96%");
     });
+</script>
+
+<script>
+    var identTable;
+    $(document).ready(function() {
+        identTable = $("#idents").DataTable({
+            "paging": false,
+            "ordering": false,
+            "info": false,
+            "searching": false
+        });
+
+        $("#idents tbody").on("click", "a", function(){
+            identTable.row($(this).parents("tr")).remove().draw();
+        });
+    });
+
+</script>
+
+<script>
+    function beforeSubmit() {
+        @* Copy the values in the first id column (ie the ident names) into the name attributes of the items in the second column.
+           This will populate the BookIdents dictionary in the View Model with any changed or new names. *@
+        var identKeys = identTable.column(0).nodes().to$();
+        $(identKeys).each(function(ix) {
+            var id = $(this).children().first().val();
+            var cell = identTable.cell(ix, 1).nodes().to$().first().children().first().attr("name", "BookIdents[" + id + "]");
+        });
+
+        return true;
+    }
+
+    function addIdent() {
+        identTable.row.add([
+            "<input class='form-control nomaxwidth'></input>",
+            "<input class='form-control nomaxwidth'></input>",
+            "<a role='button'>Delete</a>",
+        ]).draw();
+    }
 </script>
 
 

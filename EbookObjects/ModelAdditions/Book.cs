@@ -12,6 +12,7 @@ namespace EbookObjects.Models {
         /// </summary>
         /// <param name="newTags"></param>
         public void SetTags(EbooksContext db, IEnumerable<string> newTags) {
+            if (newTags == null) newTags = new string[0];
             // Add the tags that aren't already against the book
             foreach (var tag in newTags.Except(Tags.Select(t => t.Item)).ToArray()) {
                 var rtag = db.Tags.SingleOrDefault(t => t.Item == tag);
@@ -27,6 +28,10 @@ namespace EbookObjects.Models {
             }
         }
 
+        public void SetIdentifiers(EbooksContext db, IDictionary<string, string> newIds) {
+            SetIdentifiers(db, newIds.Select(kv => new Tuple<string, string>(kv.Key, kv.Value)));
+        }
+
         /// <summary>
         /// Sets the identifiers on the book to match the list passed in
         /// </summary>
@@ -36,6 +41,7 @@ namespace EbookObjects.Models {
             // Clear the idents against the book and re-add them.
             BookIdents.Clear();
 
+            if (newIds == null) return;
             foreach (var id in newIds) {
                 var ident = db.Idents.SingleOrDefault(i => i.Name == id.Item1);
                 if (ident == null) {

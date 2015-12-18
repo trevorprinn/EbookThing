@@ -54,6 +54,10 @@ namespace EbookSite.Models {
 
         public MultiSelectList TagList { get; }
 
+        public Dictionary<string, string> BookIdents { get; }
+
+        public string[] Idents { get; }
+
         public BookViewModel(Book book, EbooksContext db) {
             BookId = book.BookId;
             Title = book.Title;
@@ -63,9 +67,13 @@ namespace EbookSite.Models {
             Publishers = new SelectList(new Publisher[] { new Publisher() }.Concat(db.Publishers.Where(p => p.Books.Any(b => b.UserId == book.UserId))).ToArray(), "PublisherId", "Name", Publisher);
             Description = book.Description;
             SelectedTags = book.Tags.Select(t => t.Item).ToArray();
-            Tags = book.Tags.ToList();
-            TagList = new MultiSelectList(db.Tags.ToArray(), "Item", "Item", SelectedTags);
 
+            // Because of the bug in ListBoxFor both the tag objects and a tag list are required to
+            // populate the tagger control.
+            Tags = book.Tags.ToList();
+            TagList = new MultiSelectList(db.Tags.Where(t => t.Books.Any(b => b.UserId == book.UserId)).ToArray(), "Item", "Item", SelectedTags);
+
+            // The JSON data required by the tagger control.
             var tagsInfo = new JObject();
             foreach (var tag in db.Tags) {
                 var item = new JObject();
@@ -77,6 +85,9 @@ namespace EbookSite.Models {
                 tagsInfo.Add(tag.Item, item);
             }
             TagsInfo = tagsInfo.ToString();
+
+            Idents = db.Idents.Where(i => i.BookIdents.Any(bi => bi.Book.UserId == book.UserId)).Select(i => i.Name).ToArray();
+            BookIdents = book.BookIdents.ToDictionary(bi => bi.Ident.Name, bi => bi.Identifier);
         }
     }
 
@@ -104,6 +115,8 @@ namespace EbookSite.Models {
         public string Description { get; set; }
 
         public string[] Tags { get; set; }
+
+        public Dictionary<string, string> BookIdents { get; set; }
     }
 
     public class CoverViewModel {
