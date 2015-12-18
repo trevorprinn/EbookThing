@@ -26,6 +26,8 @@ namespace EbookSite.Models {
 
         public DisplayBook[] Books { get; private set; }
 
+        public string Search { get; set; }
+
         public IEnumerable<Book> BookSet {
             set { Books = value.Select(b => new DisplayBook(b)).ToArray(); }
         }

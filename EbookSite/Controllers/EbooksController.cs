@@ -17,6 +17,7 @@ namespace EbookSite.Controllers
         public ActionResult Index() {
             using (var db = new EbooksContext()) {
                 var model = new DisplayBooksViewModel { BookSet = db.GetEbooksUser(User).Books };
+                model.Search = (string)Session["Search"];
                 return View(model);
             }
         }
@@ -122,6 +123,12 @@ namespace EbookSite.Controllers
                 }
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult SaveSearch(string search) {
+            Session["Search"] = search;
+            return null;
         }
     }
 }
