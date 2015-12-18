@@ -166,6 +166,7 @@
         var identKeys = identTable.column(0).nodes().to$();
         $(identKeys).each(function(ix) {
             var id = $(this).children().first().val();
+            if (id == null || id.length == 0) id = ' ';
             var cell = identTable.cell(ix, 1).nodes().to$().first().children().first().attr("name", "BookIdents[" + id + "]");
         });
 
