@@ -96,7 +96,9 @@ namespace EbookObjects.Models {
 
             Title = ep.Title;
             Author = Author.Get(db, ep);
-            Publisher = Publisher.Get(db, ep);
+            Publisher = string.IsNullOrWhiteSpace(ep.Publisher) && EpubFile.GutBook != null
+                ? Publisher.Get(db, "Project Gutenberg")
+                : Publisher = Publisher.Get(db, ep);
             Cover = Cover.Get(db, ep);
             EpubFile = EpubFile.Get(db, ep);
             Series = Series.Get(db, ep);

@@ -111,5 +111,17 @@ namespace EbookSite.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        public ActionResult Reload(int bookId) {
+            using (var db = new EbooksContext()) {
+                var user = db.GetEbooksUser(User);
+                var book = db.Books.SingleOrDefault(b => b.BookId == bookId && b.UserId == user.UserId);
+                if (book != null) {
+                    book.Reload(db);
+                    db.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -34,6 +34,27 @@
             });
         });
     }
+
+    function confirmReloadDlg(title, url) {
+        $(function () {
+            $("#dlg-reload-confirm").dialog({
+                resizable: true,
+                height: 200,
+                width: 400,
+                modal: true,
+                title: 'Reload ' + title,
+                buttons: {
+                    "Reload": function () {
+                        location.href = url;
+                        $(this).dialog("close");
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+    }
 </script>
 
 <p>Toggle Visibility - 
@@ -63,7 +84,8 @@
                     @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId }) |
                     @Html.ActionLink("Read", "Index", "ReadBook", new { bookId = item.BookId }, null) |
                     @Html.ActionLink("Download", "Download", new { bookId = item.BookId }) |
-                    <a href='javascript:void();' onclick='showConfirmDlg("@item.Title", "/Ebooks/Delete?bookId=@item.BookId")'>Delete</a>
+                    <a role="button" onclick='showConfirmDlg("@item.Title", "/Ebooks/Delete?bookId=@item.BookId")'>Delete</a> |
+                    <a role="button" onclick='confirmReloadDlg("@item.Title", "/Ebooks/Reload?bookId=@item.BookId")'>Reload</a>
                 </td>
             </tr>
         }
@@ -94,4 +116,8 @@
 
 <div id="dlg-confirm" style="display:none">
     <p>This book will be deleted from your shelf.<br/>Are you sure?</p>
+</div>
+
+<div id="dlg-reload-confirm" style="display:none">
+    <p>Reloading will overwrite any changes made to the book's metadata since you imported it.<br/>Are you sure?</p>
 </div>
