@@ -1,19 +1,16 @@
 ﻿
+@model EbookSite.Models.AdminViewModel
+
 @{
     ViewBag.Title = "Admin";
 }
 
 <h2>Admin</h2>
 
-@using (Html.BeginForm("UploadGutCatalogue", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" })) {
-    <fieldset>
-        <legend>Upload Gutenberg Catalogue</legend>
-        <div class="editor-field">
-            @Html.TextBox("file", "", new { type = "file", multiple = "multiple" })
-        </div>
-        <div class="editor-field">
-            <input type="submit" value="Upload" />
-        </div>
-    </fieldset>
-    if (ViewBag.Uploaded != null && ViewBag.Uploaded) { <p>Gutenberg Catalogue Uploaded and applied</p> }
+@using (Html.BeginForm("ImportGutCatalogue", "Admin", FormMethod.Get)) {
+    if (Model.GutenbergLoaderRunning) {
+        <p>The Gutenberg Catalogue is currently being loaded.</p>
+    } else {
+        <input type="submit" value="Load Gutenberg Catalogue"/>
+    }
 }

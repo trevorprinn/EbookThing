@@ -8,6 +8,9 @@ using EbookObjects.Models;
 using EbookSite;
 using System.IO;
 using System.Xml.Linq;
+using FluentScheduler;
+using System.Threading;
+using EbookSite.Models;
 
 namespace EbookSite.Controllers
 {
@@ -20,23 +23,18 @@ namespace EbookSite.Controllers
             using (var db = new EbooksContext()) {
                 if (!db.GetEbooksUser(User).IsAdmin) return RedirectToAction("Index", "Ebooks");
             }
-            return View();
+            return View(new AdminViewModel());
         }
 
-        [HttpPost]
-        public ActionResult UploadGutCatalogue() {
+        public ActionResult ImportGutCatalogue() {
             using (var db = new EbooksContext()) {
                 if (!db.GetEbooksUser(User).IsAdmin) return RedirectToAction("Index", "Ebooks");
             }
-            if (Request.Files.Count > 0) {
-                HttpPostedFileBase hpf = Request.Files[0] as HttpPostedFileBase;
-                if (hpf.ContentLength == 0) return View("Index");
-                using (var s = hpf.InputStream) {
-                    new GutCatalogueLoader().Load(s);
-                }
-                ViewBag.Uploaded = true;
-            }
-            return View("Index");
+
+            TaskManager.AddTask<GutenbergLoadTask>(schedule => schedule.ToRunNow());
+            // Wait a second for it to start
+            Thread.Sleep(1000);
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using FluentScheduler;
+using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(EbookSite.Startup))]
@@ -9,6 +10,8 @@ namespace EbookSite
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
+
+            TaskManager.Initialize(new TaskRegistry());
         }
     }
 }
