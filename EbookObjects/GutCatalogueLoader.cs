@@ -9,7 +9,7 @@ using System.IO;
 
 namespace EbookObjects {
     /// <summary>
-    /// Loads or reloads the Gutenberg catalogue
+    /// Loads or reloads the Gutenberg catalogue from a CSV file.
     /// </summary>
     /// <remarks>
     /// The catalogue is obtained from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip and processed
