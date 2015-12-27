@@ -23,6 +23,7 @@ namespace EbookObjects.Models {
 
         public string Title { get; set; }
 
+        [ForeignKey("LanguageCode")]
         [MaxLength(5)]
         public string Language { get; set; }
 
@@ -47,6 +48,9 @@ namespace EbookObjects.Models {
 
 
         public virtual ICollection<EpubFile> EpubFiles { get; set; }
+
+        public virtual LanguageCode LanguageCode { get; set; }
+
 
         // Retrieves a file, image or book data, from the url
         private byte[] getFile(string url) {
@@ -88,6 +92,19 @@ namespace EbookObjects.Models {
             if (!StandardCoverUrl && string.IsNullOrWhiteSpace(CoverUrl)) return null;
             string url = StandardCoverUrl ? $"http://www.gutenberg.org/cache/epub/{GutBookId}/pg{GutBookId}.cover.medium.jpg" : CoverUrl;
             return getFile(url);
+        }
+
+        /// <summary>
+        /// Gets the book's language names
+        /// </summary>
+        [NotMapped]
+        public string[] Languages {
+            get { return LanguageCode.LanguageNames.Select(ln => ln.Name).OrderBy(ln => ln).ToArray(); }
+        }
+
+        public static IQueryable<GutBook> ByLanguage(EbooksContext db, string languageName) {
+            if (string.IsNullOrWhiteSpace(languageName)) return db.GutBooks;
+            return db.LanguageNames.Where(ln => ln.Name == languageName).SelectMany(ln => ln.LanguageCodes).SelectMany(lc => lc.GutBooks);
         }
     }
 }

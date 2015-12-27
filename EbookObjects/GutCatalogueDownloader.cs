@@ -3,6 +3,7 @@ using ICSharpCode.SharpZipLib.Tar;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -30,9 +31,15 @@ namespace EbookObjects {
                 int count = 0;
                 var newBooks = new List<GutBook>();
                 var newAuthors = new List<GutAuthor>();
+                var newLangNames = new List<LanguageName>();
+                var newLangCodes = new List<LanguageCode>();
                 foreach (var doc in docs) {
-                    loadBookData(db, doc, newBooks, newAuthors);
+                    loadBookData(db, doc, newBooks, newAuthors, newLangNames, newLangCodes);
                     if (++count >= 1000) {
+                        db.LanguageNames.AddRange(newLangNames);
+                        newLangNames.Clear();
+                        db.LanguageCodes.AddRange(newLangCodes);
+                        newLangCodes.Clear();
                         db.GutAuthors.AddRange(newAuthors);
                         newAuthors.Clear();
                         db.GutBooks.AddRange(newBooks);
@@ -41,13 +48,15 @@ namespace EbookObjects {
                         count = 0;
                     }
                 }
+                db.LanguageNames.AddRange(newLangNames);
+                db.LanguageCodes.AddRange(newLangCodes);
                 db.GutAuthors.AddRange(newAuthors);
                 db.GutBooks.AddRange(newBooks);
                 db.SaveChanges();
             }
         }
 
-        private void loadBookData(EbooksContext db, GutCatDoc doc, IList<GutBook> newBooks, IList<GutAuthor> newAuthors) {
+        private void loadBookData(EbooksContext db, GutCatDoc doc, IList<GutBook> newBooks, IList<GutAuthor> newAuthors, IList<LanguageName> newLangNames, IList<LanguageCode> newLangCodes) {
             var gutBook = db.GutBooks.SingleOrDefault(b => b.GutBookId == doc.Id);
             if (gutBook == null) {
                 gutBook = new GutBook { GutBookId = doc.Id };
@@ -61,6 +70,17 @@ namespace EbookObjects {
                 newAuthors.Add(gutAuthor);
             }
             gutBook.GutAuthor = gutAuthor;
+
+            var langCode = newLangCodes.SingleOrDefault(c => c.Code == doc.Language);
+            if (langCode == null) langCode = db.LanguageCodes.SingleOrDefault(c => c.Code == doc.Language);
+            if (langCode == null) {
+                var langName = newLangNames.SingleOrDefault(n => n.Name == doc.Language);
+                if (langName == null) newLangNames.Add(langName = new LanguageName { Name = doc.Language });
+                langCode = new LanguageCode { Code = doc.Language };
+                langCode.LanguageNames = new Collection<LanguageName>();
+                langCode.LanguageNames.Add(langName);
+                newLangCodes.Add(langCode);
+            }
             gutBook.Language = doc.Language;
 
             var getUrl = new Func<string, string, string>((url, standard) => url != null && url != standard ? url : null);

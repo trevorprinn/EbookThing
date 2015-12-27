@@ -31,6 +31,9 @@ namespace EbookObjects.Models
         public virtual DbSet<GutBook> GutBooks { get; set; }
         public virtual DbSet<GutAuthor> GutAuthors { get; set; }
 
+        public virtual DbSet<LanguageCode> LanguageCodes { get; set; }
+        public virtual DbSet<LanguageName> LanguageNames { get; set; }
+
         //
         // These are required for the integrated user membership.
         //

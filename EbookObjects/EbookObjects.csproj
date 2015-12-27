@@ -76,11 +76,16 @@
     <Compile Include="Migrations\201512011552318_GutStandardUrls.Designer.cs">
       <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512261721234_Languages.cs" />
+    <Compile Include="Migrations\201512261721234_Languages.Designer.cs">
+      <DependentUpon>201512261721234_Languages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LanguageCode.cs" />
+    <Compile Include="Models\LanguageName.cs" />
     <Compile Include="SecretConfig.cs" />
     <Compile Include="Epub.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GoogleBook.cs" />
-    <Compile Include="GutCatalogueLoader.cs" />
     <Compile Include="Migrations\201511131950582_InitialCreate.cs" />
     <Compile Include="Migrations\201511131950582_InitialCreate.Designer.cs">
       <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
@@ -131,6 +136,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <EmbeddedResource Include="Misc\langtable.csv" />
     <None Include="Misc\loadrdfs.linq" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -146,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512011552318_GutStandardUrls.resx">
       <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512261721234_Languages.resx">
+      <DependentUpon>201512261721234_Languages.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
