@@ -6,20 +6,40 @@
 
 <h2>@ViewBag.Title</h2>
 
+@Scripts.Render("~/bundles/combo")
+@Styles.Render("~/Content/combo")
+
 @Styles.Render("~/Content/datatables")
 @Scripts.Render("~/bundles/datatables")
 
-<form action="/Gutenberg/Index" method="get">
-    @Html.DisplayNameFor(model => model.Filter)
-    @Html.TextBoxFor(model => model.Filter)
-    <input type="submit" name="submit" value="Apply Filter" />
-</form>
+@using (Html.BeginForm("Index", "Gutenberg", FormMethod.Get)) {
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Filter, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Filter, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Language, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.ComboBoxFor(model => model.Language, Model.Languages, allowAny: false, htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" name="sub,it" value="Apply Filter" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
 
 <table class="table" id="books">
     <thead>
         <tr>
             <th>Author</th>
             <th>Title</th>
+            <th>Languages</th>
             <th></th>
             <th></th>
         </tr>
@@ -29,12 +49,13 @@
             <tr>
                 <td>@Html.DisplayFor(m => item.Author)</td>
                 <td>@Html.DisplayFor(m => item.Title)</td>
+                <td class="multiline">@Html.DisplayFor(m => item.Languages)</td>
                 <td><a href='@Url.Action("Cover", new { bookId = item.Id })'><img src='@Url.Action("ShowGutThumbnail", "BookImage", new { bookId = item.Id })' /></a></td>
                 <td>
                     @if (item.HasImagesEpub) {
-                        @Html.ActionLink("Import (Images)", "Download", new { gutBookId = item.Id, images = true });
+    @Html.ActionLink("Import (Images)", "Download", new { gutBookId = item.Id, images = true });
                         @: |
-            }
+                      }
                     @if (item.HasNoImagesEpub) {
                         @Html.ActionLink("Import (No Images)", "Download", new { gutBookId = item.Id, images = false });
                     }
@@ -48,7 +69,7 @@
     $(document).ready(function () {
         $('#books').dataTable({
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [2, 3] }
+                { "orderable": false, "searchable": false, "targets": [3, 4] }
             ],
             "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]
         });

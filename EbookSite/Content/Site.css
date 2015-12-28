@@ -86,3 +86,7 @@ textarea {
 .nomaxwidth {
     max-width: none;
 }
+
+.multiline {
+    white-space: pre-wrap;
+}

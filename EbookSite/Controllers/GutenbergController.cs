@@ -13,14 +13,19 @@ namespace EbookSite.Controllers
     public class GutenbergController : Controller
     {
         // GET: Gutenberg
-        public ActionResult Index(string filter)
+        public ActionResult Index(string filter, int language = 0)
         {
-            if (string.IsNullOrWhiteSpace(filter)) return View(new GutenbergViewModel());
             using (var db = new EbooksContext()) {
+                if (string.IsNullOrWhiteSpace(filter) && language == 0) return View(new GutenbergViewModel(LanguageName.InUse(db)));
                 string usefilter = filter.ToLower();
-                var books = db.GutBooks.Where(b => b.Title.ToLower().Contains(usefilter) || (b.GutAuthor != null && b.GutAuthor.Name.Contains(usefilter)))
+                var langCodes = db.LanguageNames.SingleOrDefault(l => l.LanguageNameId == language)?.LanguageCodes.Select(c => c.Code).ToArray();
+                IQueryable<GutBook> books = db.GutBooks;
+                if (langCodes != null && langCodes.Any()) {
+                    books = books.Where(b => langCodes.Contains(b.Language));
+                }
+                books = books.Where(b => b.Title.ToLower().Contains(usefilter) || (b.GutAuthor != null && b.GutAuthor.Name.Contains(usefilter)))
                     .Take(200).OrderBy(b => b.Title).ThenBy(b => b.GutAuthor == null ? null : b.GutAuthor.Name);
-                var vm = new GutenbergViewModel(books, filter);
+                var vm = new GutenbergViewModel(books, filter, language, LanguageName.InUse(db));
                 return View(vm);
             }
         }

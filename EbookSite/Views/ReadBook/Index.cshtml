@@ -6,7 +6,7 @@
 
 <h2>@Model.Title</h2>
 
-<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
+<p><a href="@Request.UrlReferrer.ToString()">Back</a></p>
 
 <script>
     var spineRefs = [ @Html.Raw(string.Join(",", Model.SpineRefs.Select(r => "'" + r + "'")))];
@@ -108,7 +108,7 @@
     </tbody>
 </table>
 
-<p><a href="@Html.Encode(Request.UrlReferrer.ToString())">Back</a></p>
+<p><a href="@Request.UrlReferrer.ToString()">Back</a></p>
 
 <script>
     $().ready(function () {

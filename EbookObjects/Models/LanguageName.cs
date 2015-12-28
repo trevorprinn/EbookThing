@@ -23,8 +23,8 @@ namespace EbookObjects.Models {
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public static IEnumerable<string> InUse(EbooksContext db) {
-            return db.GutBooks.Select(gb => gb.LanguageCode).SelectMany(lc => lc.LanguageNames).Select(ln => ln.Name).Distinct().OrderBy(ln => ln);
+        public static IEnumerable<LanguageName> InUse(EbooksContext db) {
+            return db.GutBooks.Select(gb => gb.LanguageCode).SelectMany(lc => lc.LanguageNames).Distinct().OrderBy(ln => ln.Name);
         }
     }
 }
