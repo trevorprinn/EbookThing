@@ -1,0 +1,20 @@
+﻿@model EbookSite.Models.GutGoogleViewModel
+
+@{
+    ViewBag.Title = "Gutenberg Book Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<h3>@Model.Title - @Model.Author</h3>
+
+@foreach (var gbook in Model.Books) {
+    <hr />
+    if (gbook.ThumbnailUrl != null) {
+        <img src="@gbook.ThumbnailUrl" />
+    }
+    <p>@gbook.Title - @gbook.Authors</p>
+    <p>@gbook.Description</p>
+}
+
+

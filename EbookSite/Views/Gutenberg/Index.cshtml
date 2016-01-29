@@ -58,7 +58,9 @@
                       }
                     @if (item.HasNoImagesEpub) {
                         @Html.ActionLink("Import (No Images)", "Download", new { gutBookId = item.Id, images = false });
+                        @: |
                     }
+                    @Html.ActionLink("Details", "DisplayDetails", new { gutBookId = item.Id })
                 </td>
             </tr>
         }

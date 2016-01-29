@@ -111,13 +111,15 @@ namespace EbookObjects {
             get {
                 if (!_thumbLoaded) {
                     _thumbLoaded = true;
-                    CoverSizes[] sizes = { CoverSizes.thumbnail, CoverSizes.smallThumbnail };
-                    string url = getCoverLink(sizes);
+                    string url = ThumbnailUrl;
                     if (url != null) _thumbnailData = getCoverData(url);
                 }
                 return _thumbnailData;
             }
         }
+
+        public string ThumbnailUrl =>
+            getCoverLink(new CoverSizes[] { CoverSizes.thumbnail, CoverSizes.smallThumbnail });
 
         public byte[] CoverData {
             get {

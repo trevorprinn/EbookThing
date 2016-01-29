@@ -485,6 +485,7 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Gutenberg\Index.cshtml" />
     <Content Include="Views\Gutenberg\Cover.cshtml" />
+    <Content Include="Views\Gutenberg\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

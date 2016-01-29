@@ -63,5 +63,15 @@ namespace EbookSite.Controllers
             }
             return RedirectToAction("Index", "Ebooks");
         }
+
+        public ActionResult DisplayDetails(int gutBookId) {
+            using (var db = new EbooksContext()) {
+                var book = db.GutBooks.Single(b => b.GutBookId == gutBookId);
+                var lang = book.Language != null && book.Language.Length == 2 ? book.Language : null;
+                var gbooks = GoogleBook.GetBooks(title: $"\"{book.Title}\"", author: book.GutAuthor.Name, language: lang);
+                return View("Details", new GutGoogleViewModel(book, gbooks));
+            }
+        }
     }
+
 }
