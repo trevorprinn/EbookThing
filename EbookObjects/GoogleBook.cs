@@ -89,6 +89,8 @@ namespace EbookObjects {
 
         public string Language => info["language"]?.ToString();
 
+        public string InfoLink => info["infoLink"]?.ToString();
+
         public IEnumerable<Tuple<string, string>> Identifiers {
             get {
                 var ids = new List<Tuple<string, string>>();

@@ -75,11 +75,14 @@ namespace EbookSite.Models {
 
             public string ThumbnailUrl { get; }
 
+            public string BookPageUrl { get; }
+
             public Details(GoogleBook book) {
                 Title = book.Title;
                 Authors = book.Authors == null ? "" : string.Join(", ", book.Authors);
                 Description = book.Description;
                 ThumbnailUrl = book.ThumbnailUrl;
+                BookPageUrl = book.InfoLink;
             }
         }
 
