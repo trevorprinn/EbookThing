@@ -47,7 +47,7 @@ namespace EbookSite.Models {
         }
 
         public GutenbergViewModel(IEnumerable<GutBook> books, string filter, int language, IEnumerable<LanguageName> languages) {
-            Books = books.Select(b => new Book(b)).ToArray();
+            Books = books.ToList().Select(b => new Book(b)).ToArray();
 
             Filter = filter;
             Language = language;

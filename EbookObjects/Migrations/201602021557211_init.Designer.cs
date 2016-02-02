@@ -7,13 +7,13 @@ namespace EbookObjects.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Gutenberg : IMigrationMetadata
+    public sealed partial class init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Gutenberg));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201511251636301_Gutenberg"; }
+            get { return "201602021557211_init"; }
         }
         
         string IMigrationMetadata.Source

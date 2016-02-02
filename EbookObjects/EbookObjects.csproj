@@ -54,6 +54,7 @@
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -72,33 +73,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GutCatalogueDownloader.cs" />
-    <Compile Include="Migrations\201512011552318_GutStandardUrls.cs" />
-    <Compile Include="Migrations\201512011552318_GutStandardUrls.Designer.cs">
-      <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
+    <Compile Include="Migrations\201602021557211_init.cs" />
+    <Compile Include="Migrations\201602021557211_init.Designer.cs">
+      <DependentUpon>201602021557211_init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201512261721234_Languages.cs" />
-    <Compile Include="Migrations\201512261721234_Languages.Designer.cs">
-      <DependentUpon>201512261721234_Languages.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\LanguageCode.cs" />
     <Compile Include="Models\LanguageName.cs" />
     <Compile Include="SecretConfig.cs" />
     <Compile Include="Epub.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GoogleBook.cs" />
-    <Compile Include="Migrations\201511131950582_InitialCreate.cs" />
-    <Compile Include="Migrations\201511131950582_InitialCreate.Designer.cs">
-      <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201511191137334_CoverContentType.cs" />
-    <Compile Include="Migrations\201511191137334_CoverContentType.Designer.cs">
-      <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201511251636301_Gutenberg.cs" />
-    <Compile Include="Migrations\201511251636301_Gutenberg.Designer.cs">
-      <DependentUpon>201511251636301_Gutenberg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ModelAdditions\Author.cs" />
     <Compile Include="ModelAdditions\Book.cs" />
     <Compile Include="ModelAdditions\Cover.cs" />
@@ -136,26 +121,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <EmbeddedResource Include="Migrations\201602021557211_init.resx">
+      <DependentUpon>201602021557211_init.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Misc\langtable.csv" />
     <None Include="Misc\loadrdfs.linq" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511131950582_InitialCreate.resx">
-      <DependentUpon>201511131950582_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511191137334_CoverContentType.resx">
-      <DependentUpon>201511191137334_CoverContentType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511251636301_Gutenberg.resx">
-      <DependentUpon>201511251636301_Gutenberg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512011552318_GutStandardUrls.resx">
-      <DependentUpon>201512011552318_GutStandardUrls.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512261721234_Languages.resx">
-      <DependentUpon>201512261721234_Languages.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EbookObjects.Secret.xml">

@@ -5,16 +5,32 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Security.Claims;
 using Microsoft.AspNet.Identity;
 using System.Threading.Tasks;
+using MySql.Data.Entity;
+using System.IO;
+using System.Reflection;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace EbookObjects.Models
 {
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
     public partial class EbooksContext : DbContext {
         static EbooksContext() {
             Database.SetInitializer<EbooksContext>(new MigrateDatabaseToLatestVersion<EbooksContext, Migrations.Configuration>());
         }
 
+        private static bool _langSetup = false;
+
         public EbooksContext()
             : base("Name=EbooksContext") {
+            if (!_langSetup) {
+                try {
+                    if (!LanguageCodes.Any()) {
+                        initLanguageTable();
+                    }
+                    _langSetup = true;
+                } catch { }
+            }
         }
 
         public DbSet<Author> Authors { get; set; }
@@ -87,6 +103,40 @@ namespace EbookObjects.Models
         public static EbooksContext Create() {
             return new EbooksContext();
         }
+
+        private void initLanguageTable() {
+            using (var langstream = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("EbookObjects.Misc.langtable.csv"))) {
+                var langs = langstream.FromCsv<LangData>().ToArray();
+                var existNames = LanguageNames.Select(n => n.Name).ToArray();
+                var newNames = new List<Models.LanguageName>(langs.Select(l => l.Name).Distinct().Except(existNames).Select(n => new Models.LanguageName { Name = n }));
+
+                var newCodes = new List<Models.LanguageCode>();
+                foreach (var lang in langs) {
+                    var langcode = newCodes.SingleOrDefault(c => c.Code == lang.Code);
+                    if (langcode == null) langcode = LanguageCodes.SingleOrDefault(c => c.Code == lang.Code);
+                    if (langcode == null) {
+                        var langName = newNames.SingleOrDefault(n => n.Name == lang.Name);
+                        if (langName == null) langName = LanguageNames.SingleOrDefault(n => n.Name == lang.Name);
+                        var newCode = new Models.LanguageCode { Code = lang.Code };
+                        if (newCode.LanguageNames == null) newCode.LanguageNames = new List<Models.LanguageName>();
+                        newCode.LanguageNames.Add(langName);
+                        newCodes.Add(newCode);
+                    } else if (!langcode.LanguageNames.Any(n => n.Name == lang.Name)) {
+                        var langName = newNames.SingleOrDefault(n => n.Name == lang.Name);
+                        if (langName == null) langName = LanguageNames.SingleOrDefault(n => n.Name == lang.Name);
+                        langcode.LanguageNames.Add(langName);
+                    }
+                }
+                LanguageNames.AddRange(newNames);
+                LanguageCodes.AddRange(newCodes);
+            }
+        }
+
+        private class LangData {
+            public string Code { get; set; }
+            public string Name { get; set; }
+        }
+
     }
 
     public class ApplicationUser : IdentityUser {
