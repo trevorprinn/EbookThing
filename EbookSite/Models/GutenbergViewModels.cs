@@ -22,7 +22,7 @@ namespace EbookSite.Models {
                 Title = book.Title;
                 HasImagesEpub = book.StandardEpubUrlImages || !string.IsNullOrWhiteSpace(book.EpubUrlImages);
                 HasNoImagesEpub = book.StandardEpubUrlNoImages || !string.IsNullOrWhiteSpace(book.EpubUrlNoImages);
-                Languages = string.Join("\r\n", book.Languages);
+                Languages = string.Join("\r\n", book.GetLanguages());
             }
         }
 

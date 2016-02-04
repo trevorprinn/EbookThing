@@ -97,9 +97,9 @@ namespace EbookObjects.Models {
         /// <summary>
         /// Gets the book's language names
         /// </summary>
-        [NotMapped]
-        public string[] Languages {
-            get { return LanguageCode.LanguageNames.Select(ln => ln.Name).OrderBy(ln => ln).ToArray(); }
+        /// <returns></returns>
+        public string[] GetLanguages() {
+            return LanguageCode.LanguageNames.Select(ln => ln.Name).OrderBy(ln => ln).ToArray();
         }
 
         public static IQueryable<GutBook> ByLanguage(EbooksContext db, string languageName) {
